@@ -1,0 +1,2 @@
+C:/Users/pomok/Desktop/Delivery/android/app/.cxx/RelWithDebInfo/2u114a5s/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/pomok/Desktop/Delivery/android/app/.cxx/RelWithDebInfo/2u114a5s/armeabi-v7a/CMakeFiles/rebuild_cache.dir
