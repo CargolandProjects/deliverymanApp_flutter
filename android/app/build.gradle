@@ -31,7 +31,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.cargolandfood.CargolandFoodRider"
-    compileSdkVersion 35
+    compileSdkVersion 36
 
     compileOptions {
         coreLibraryDesugaringEnabled true
@@ -53,8 +53,8 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.cargolandfood.CargolandFoodRider"
-        minSdkVersion 23
-        targetSdkVersion 35
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
