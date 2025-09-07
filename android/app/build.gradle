@@ -33,14 +33,15 @@ android {
     namespace "com.cargolandfood.CargolandFoodRider"
     compileSdkVersion 36
 
-    compileOptions {
-        coreLibraryDesugaringEnabled true
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
+   compileOptions {
+    coreLibraryDesugaringEnabled true
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+}
+kotlinOptions {
+    jvmTarget = '17'
+}
+
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -48,6 +49,12 @@ android {
 
     lintOptions {
         disable 'InvalidPackage'
+    }
+
+     packagingOptions {
+        jniLibs {
+            useLegacyPackaging false // ✅ uncompressed .so libs
+        }
     }
 
     defaultConfig {
@@ -58,6 +65,9 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
+         ndk {
+            abiFilters "arm64-v8a", "armeabi-v7a"
+        }
     }
 
     signingConfigs {
