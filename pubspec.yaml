@@ -1,5 +1,5 @@
-name: Cargoland Rider
-description: A new Flutter application.
+name: cargoland_rider
+description: Cargoland Rider delivery platform.
 publish_to: "none" #
 version: 1.0.0+3
 
