@@ -1,3 +1,4 @@
+import 'package:geolocator/geolocator.dart';
 import 'package:stackfood_multivendor_driver/common/models/response_model.dart';
 import 'package:stackfood_multivendor_driver/api/api_client.dart';
 import 'package:stackfood_multivendor_driver/feature/order/domain/models/order_cancellation_body_model.dart';
@@ -86,7 +87,18 @@ class OrderRepository implements OrderRepositoryInterface {
   @override
   Future<ResponseModel> acceptOrder(int? orderID) async {
     ResponseModel responseModel;
-    Response response = await apiClient.postData(AppConstants.acceptOrderUri, {"_method": "put", 'token': _getUserToken(), 'order_id': orderID}, handleError: false);
+    final Position locationResult = await Geolocator.getCurrentPosition();
+    Response response = await apiClient.postData(
+      AppConstants.acceptOrderUri,
+      {
+        "_method": "put",
+        'token': _getUserToken(),
+        'order_id': orderID,
+        'lat': locationResult.latitude,
+        'lng': locationResult.longitude,
+      },
+      handleError: false,
+    );
     if (response.statusCode == 200) {
       responseModel = ResponseModel(true, response.body['message']);
     }else {

@@ -3,9 +3,9 @@ import 'package:stackfood_multivendor_driver/util/images.dart';
 
 class AppConstants {
   static const String appName = 'Cargoland Rider';
-  static const double appVersion = 8.5;
+  static const double appVersion = 8.6;
 
-  ///Flutter SDK: 3.35.7
+  ///Flutter SDK: 3.38.2
 
   static const String baseUrl = 'https://cargolandfood.com';
   static const String configUri = '/api/v1/config';

@@ -90,8 +90,8 @@ class _SignInViewScreenState extends State<SignInViewScreen> {
                         onCountryChanged: (CountryCode countryCode) {
                           countryDialCode = countryCode.dialCode;
                         },
-                        countryDialCode: countryDialCode != null ? CountryCode.fromCountryCode(Get.find<SplashController>().configModel!.country!).code
-                            : Get.find<LocalizationController>().locale.countryCode,
+                        countryDialCode: countryDialCode ?? CountryCode.fromCountryCode(Get.find<SplashController>().configModel!.country!).code
+                            ?? Get.find<LocalizationController>().locale.countryCode,
                       ),
 
                       CustomTextFieldWidget(

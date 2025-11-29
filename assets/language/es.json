@@ -485,5 +485,6 @@
   "already_paid_digitally": "Ya pagado digitalmente",
   "ignore_order_description": "Una vez que hagas clic en 'Ignorar', ya no verás este pedido",
   "hr": "hr",
-  "hr_ago": "hace hr"
+  "hr_ago": "hace hr",
+  "loading" : "Cargando"
 }

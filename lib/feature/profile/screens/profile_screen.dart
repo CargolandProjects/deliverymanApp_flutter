@@ -126,6 +126,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           title: 'offline'.tr,
                           description: 'are_you_sure_to_offline'.tr,
                           onConfirm: () {
+                            print('=======is snakebar apear 1: ${Get.isSnackbarOpen}=// ${Get.isOverlaysOpen}========');
+                            if(Get.isSnackbarOpen) {
+                              Get.closeCurrentSnackbar();
+                            }
                             profileController.updateActiveStatus(isUpdate: true);
                           },
                         ),
@@ -139,6 +143,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           if(profileController.shifts != null && profileController.shifts!.isNotEmpty) {
                             Get.dialog(const ShiftDialogueWidget());
                           }else{
+                            print('=======is snakebar apear 2: ${Get.isSnackbarOpen}=========');
                             profileController.updateActiveStatus();
                           }
                         });
@@ -146,6 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         if(profileController.shifts != null && profileController.shifts!.isNotEmpty) {
                           Get.dialog(const ShiftDialogueWidget());
                         }else{
+                          print('=======is snakebar apear 3: ${Get.isSnackbarOpen}=========');
                           profileController.updateActiveStatus();
                         }
                       }

@@ -88,7 +88,7 @@ class ProfileController extends GetxController implements GetxService {
     if (responseModel.isSuccess) {
       Get.back();
       _profileModel!.active = _profileModel!.active == 0 ? 1 : 0;
-      showCustomSnackBar(responseModel.message, isError: false);
+      // showCustomSnackBar(responseModel.message, isError: false);
       isSuccess = true;
       if (_profileModel!.active == 1) {
         profileServiceInterface.checkPermission(() => startLocationRecord());
