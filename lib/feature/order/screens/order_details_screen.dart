@@ -61,7 +61,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
   void _startApiCalling(){
     _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
-      Get.find<OrderController>().getOrderWithId(Get.find<OrderController>().orderModel!.id);
+      Get.find<OrderController>().getOrderWithId(widget.orderId);
     });
   }
 
@@ -208,36 +208,33 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
                     DateConverter.isBeforeTime(controllerOrderModel.scheduleAt) ? (controllerOrderModel.orderStatus != 'handover' && controllerOrderModel.orderStatus != 'delivered'
                     && controllerOrderModel.orderStatus != 'failed' && controllerOrderModel.orderStatus != 'canceled' && controllerOrderModel.orderStatus != 'refund_requested' && controllerOrderModel.orderStatus != 'our_for_delivery'
-                    && controllerOrderModel.orderStatus != 'refunded' && controllerOrderModel.orderStatus != 'refund_request_canceled') ? Column(children: [
+                    && controllerOrderModel.orderStatus != 'refunded' && controllerOrderModel.orderStatus != 'refund_request_canceled') ? Padding(
+                      padding: const EdgeInsets.all(Dimensions.paddingSizeLarge),
+                      child: Row(children: [
+                        CustomAssetImageWidget(
+                          image: Images.cooking,
+                          height: 60, width: 60, fit: BoxFit.contain,
+                        ),
+                        const SizedBox(width: Dimensions.paddingSizeLarge),
 
-                      const SizedBox(height: Dimensions.paddingSizeDefault),
-                      CustomAssetImageWidget(
-                        image: Images.cooking,
-                        height: 140, width: 140, fit: BoxFit.contain,
-                      ),
-                      const SizedBox(height: Dimensions.paddingSizeDefault),
+                        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text('food_need_to_deliver_within'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).hintColor)),
+                          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
-                      Text('food_need_to_deliver_within'.tr, style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).hintColor)),
-                      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                          Row(mainAxisSize: MainAxisSize.min, children: [
+                            Text(
+                              DateConverter.differenceInMinute(controllerOrderModel.restaurantDeliveryTime, controllerOrderModel.createdAt, controllerOrderModel.processingTime, controllerOrderModel.scheduleAt) < 5 ? '1 - 5'
+                              : '${DateConverter.differenceInMinute(controllerOrderModel.restaurantDeliveryTime, controllerOrderModel.createdAt, controllerOrderModel.processingTime, controllerOrderModel.scheduleAt)-5} '
+                              '- ${DateConverter.differenceInMinute(controllerOrderModel.restaurantDeliveryTime, controllerOrderModel.createdAt, controllerOrderModel.processingTime, controllerOrderModel.scheduleAt)}',
+                              style: robotoBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge),
+                            ),
+                            const SizedBox(width: Dimensions.paddingSizeExtraSmall),
 
-                      Center(
-                        child: Row(mainAxisSize: MainAxisSize.min, children: [
-
-                          Text(
-                            DateConverter.differenceInMinute(controllerOrderModel.restaurantDeliveryTime, controllerOrderModel.createdAt, controllerOrderModel.processingTime, controllerOrderModel.scheduleAt) < 5 ? '1 - 5'
-                            : '${DateConverter.differenceInMinute(controllerOrderModel.restaurantDeliveryTime, controllerOrderModel.createdAt, controllerOrderModel.processingTime, controllerOrderModel.scheduleAt)-5} '
-                            '- ${DateConverter.differenceInMinute(controllerOrderModel.restaurantDeliveryTime, controllerOrderModel.createdAt, controllerOrderModel.processingTime, controllerOrderModel.scheduleAt)}',
-                            style: robotoBold.copyWith(fontSize: Dimensions.fontSizeExtraLarge),
-                          ),
-                          const SizedBox(width: Dimensions.paddingSizeExtraSmall),
-
-                          Text('min'.tr, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).primaryColor)),
-
+                            Text('min'.tr, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge, color: Theme.of(context).primaryColor)),
+                          ]),
                         ]),
-                      ),
-                      const SizedBox(height: Dimensions.paddingSizeExtraLarge),
-
-                    ]) : const SizedBox() : const SizedBox(),
+                      ]),
+                    ) : const SizedBox() : const SizedBox(),
 
                     controllerOrderModel.bringChangeAmount != null && controllerOrderModel.bringChangeAmount! > 0 ? Container(
                       width: double.infinity,
@@ -361,7 +358,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                     ) : const SizedBox(),
                     DividerWidget(height: (controllerOrderModel.cutlery != null) ? Dimensions.paddingSizeSmall : 0),
 
-                    controllerOrderModel.unavailableItemNote != null ? DetailsCustomCard(
+                    controllerOrderModel.unavailableItemNote != null && controllerOrderModel.unavailableItemNote!.isNotEmpty ? DetailsCustomCard(
                       padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
                       borderRadius: Dimensions.radiusSmall,
                       isBorder: false,
@@ -385,9 +382,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
                       ]),
                     ): const SizedBox(),
-                    DividerWidget(height: controllerOrderModel.unavailableItemNote != null ? Dimensions.paddingSizeSmall : 0),
+                    DividerWidget(height: controllerOrderModel.unavailableItemNote != null && controllerOrderModel.unavailableItemNote!.isNotEmpty ? Dimensions.paddingSizeSmall : 0),
 
-                    controllerOrderModel.deliveryInstruction != null ? DetailsCustomCard(
+                    controllerOrderModel.deliveryInstruction != null && controllerOrderModel.deliveryInstruction!.isNotEmpty ? DetailsCustomCard(
                       padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
                       borderRadius: Dimensions.radiusSmall,
                       isBorder: false,
@@ -411,9 +408,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
                       ]),
                     ): const SizedBox(),
-                    DividerWidget(height: controllerOrderModel.deliveryInstruction != null ? Dimensions.paddingSizeSmall : 0),
+                    DividerWidget(height: controllerOrderModel.deliveryInstruction != null && controllerOrderModel.deliveryInstruction!.isNotEmpty ? Dimensions.paddingSizeSmall : 0),
 
-                    (controllerOrderModel.orderNote  != null && controllerOrderModel.orderNote!.isNotEmpty) ? DetailsCustomCard(
+                    (controllerOrderModel.orderNote != null && controllerOrderModel.orderNote!.isNotEmpty) ? DetailsCustomCard(
                       padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
                       borderRadius: Dimensions.radiusSmall,
                       isBorder: false,
@@ -525,8 +522,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         Text('billing_info'.tr, style: robotoBold),
                         const SizedBox(height: Dimensions.paddingSizeSmall),
 
-                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                          Text('${'subtotal'.tr} ${taxIncluded ? '(${'tax_included'.tr})' : ''}', style: robotoRegular.copyWith(color: Theme.of(context).hintColor)),
+                        Row(children: [
+                          Text('subtotal'.tr, style: robotoRegular.copyWith(color: Theme.of(context).hintColor)),
+
+                          taxIncluded ? Text(' ${'vat_tax_inc'.tr}', style: robotoMedium.copyWith(
+                            fontSize: Dimensions.fontSizeExtraSmall, color: Theme.of(context).hintColor,
+                          )) : const SizedBox(),
+                          const Expanded(child: SizedBox()),
+
                           Text(PriceConverter.convertPrice(total - dmTips), style: robotoMedium, textDirection: TextDirection.ltr),
                         ]),
                         const SizedBox(height: Dimensions.paddingSizeSmall),
@@ -698,45 +701,49 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         style: robotoRegular.copyWith(color: Theme.of(context).hintColor),
                       ),
                     ]),
-                  ) : showSlider ? (controllerOrderModel.paymentMethod == 'cash_on_delivery' && controllerOrderModel.orderStatus == 'accepted' && !restConfModel && cancelPermission! && !selfDelivery) ? Row(children: [
-                    Expanded(child: TextButton(
-                      onPressed: (){
-                        orderController.setOrderCancelReason('');
-                        Get.dialog(CancellationDialogueWidget(orderId: widget.orderId));
-                      },
-                      style: TextButton.styleFrom(
-                        minimumSize: const Size(1170, 40), padding: EdgeInsets.zero,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
-                          side: BorderSide(width: 1, color: Theme.of(context).textTheme.bodyLarge!.color!),
-                        ),
-                      ),
-                      child: Text('cancel'.tr, textAlign: TextAlign.center, style: robotoRegular.copyWith(
-                        color: Theme.of(context).textTheme.titleSmall!.color,
-                        fontSize: Dimensions.fontSizeLarge,
-                      )),
-                    )),
-                    const SizedBox(width: Dimensions.paddingSizeSmall),
-                    Expanded(child: CustomButtonWidget(
-                      buttonText: 'confirm'.tr, height: 40,
-                      onPressed: () {
-                        showCustomBottomSheet(
-                          child: CustomConfirmationBottomSheet(
-                            title: 'are_you_sure_to_confirm'.tr,
-                            description: 'you_want_to_confirm_this_order'.tr,
-                            onConfirm: () {
-                              orderController.updateOrderStatus(controllerOrderModel.id, 'confirmed', back: true).then((success) {
-                                if(success) {
-                                  Get.find<ProfileController>().getProfile();
-                                  Get.find<OrderController>().getCurrentOrders(status: Get.find<OrderController>().selectedRunningOrderStatus!);
-                                }
-                              });
-                            },
+                  ) : showSlider ? (controllerOrderModel.paymentMethod == 'cash_on_delivery' && controllerOrderModel.orderStatus == 'accepted' && !restConfModel && cancelPermission! && !selfDelivery) ? CustomCard(
+                    padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+                    isBorder: false,
+                    child: Row(children: [
+                      Expanded(child: TextButton(
+                        onPressed: (){
+                          orderController.setOrderCancelReason('');
+                          Get.dialog(CancellationDialogueWidget(orderId: widget.orderId));
+                        },
+                        style: TextButton.styleFrom(
+                          minimumSize: const Size(1170, 40), padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                            side: BorderSide(width: 1, color: Theme.of(context).textTheme.bodyLarge!.color!),
                           ),
-                        );
-                      },
-                    )),
-                  ]) : CustomCard(
+                        ),
+                        child: Text('cancel'.tr, textAlign: TextAlign.center, style: robotoRegular.copyWith(
+                          color: Theme.of(context).textTheme.titleSmall!.color,
+                          fontSize: Dimensions.fontSizeLarge,
+                        )),
+                      )),
+                      const SizedBox(width: Dimensions.paddingSizeSmall),
+                      Expanded(child: CustomButtonWidget(
+                        buttonText: 'confirm'.tr, height: 40,
+                        onPressed: () {
+                          showCustomBottomSheet(
+                            child: CustomConfirmationBottomSheet(
+                              title: 'are_you_sure_to_confirm'.tr,
+                              description: 'you_want_to_confirm_this_order'.tr,
+                              onConfirm: () {
+                                orderController.updateOrderStatus(controllerOrderModel.id, 'confirmed', back: true).then((success) {
+                                  if(success) {
+                                    Get.find<ProfileController>().getProfile();
+                                    Get.find<OrderController>().getCurrentOrders(status: Get.find<OrderController>().selectedRunningOrderStatus!);
+                                  }
+                                });
+                              },
+                            ),
+                          );
+                        },
+                      )),
+                    ]),
+                  ) : CustomCard(
                     padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
                     isBorder: false,
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

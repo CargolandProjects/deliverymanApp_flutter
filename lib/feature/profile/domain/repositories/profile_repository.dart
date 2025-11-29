@@ -74,7 +74,7 @@ class ProfileRepository implements ProfileRepositoryInterface {
       _updateToken();
     }else {
       if(!GetPlatform.isWeb) {
-        _updateToken(notificationDeviceToken: '@');
+        apiClient.postData(AppConstants.tokenUri, {"_method": "put", "token": _getUserToken(), "fcm_token": '@'}, handleError: false);
         FirebaseMessaging.instance.unsubscribeFromTopic(AppConstants.topic);
         FirebaseMessaging.instance.unsubscribeFromTopic(sharedPreferences.getString(AppConstants.zoneTopic)!);
       }

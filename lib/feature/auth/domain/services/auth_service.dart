@@ -79,44 +79,34 @@ class AuthService implements AuthServiceInterface {
   }
 
   @override
-  Future<FilePickerResult?> picFile(MediaData mediaData) async {
+  Future<FilePickerResult?> picFile(MediaData mediaData) async{
     List<String> permission = [];
-
-    if (mediaData.image == 1) {
+    if(mediaData.image == 1) {
       permission.add('jpg');
     }
-    if (mediaData.pdf == 1) {
+    if(mediaData.pdf == 1) {
       permission.add('pdf');
     }
-    if (mediaData.docs == 1) {
+    if(mediaData.docs == 1) {
       permission.add('doc');
     }
 
-    // Clean extensions (remove any dots)
-    permission = permission.map((e) => e.replaceAll('.', '')).toList();
-
     FilePickerResult? result;
 
-    try {
-      result = await FilePicker.platform.pickFiles(
-        type: permission.isNotEmpty ? FileType.custom : FileType.any,
-        allowedExtensions: permission.isNotEmpty ? permission : null,
-        allowMultiple: false,
-      );
-
-      if (result != null && result.files.isNotEmpty) {
-        if (result.files.single.size > 2000000) {
-          showCustomSnackBar('please_upload_lower_size_file'.tr);
-          return null;
-        }
+    result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: permission,
+      allowMultiple: false,
+    );
+    if(result != null && result.files.isNotEmpty) {
+      if(result.files.single.size > 2000000) {
+        result = null;
+        showCustomSnackBar('please_upload_lower_size_file'.tr);
+      } else {
         return result;
       }
-    } catch (e) {
-      debugPrint("FilePicker error: $e");
-      showCustomSnackBar('file_picker_error'.tr);
     }
-
-    return null;
+    return result;
   }
 
   @override

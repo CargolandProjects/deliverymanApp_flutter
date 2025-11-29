@@ -12,7 +12,7 @@ import 'package:stackfood_multivendor_driver/helper/image_size_checker.dart';
 import 'package:stackfood_multivendor_driver/helper/user_type_helper.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:stackfood_multivendor_driver/util/app_constants.dart';
+import 'package:stackfood_multivendor_driver/util/dimensions.dart';
 
 class ChatController extends GetxController implements GetxService {
   final ChatServiceInterface chatServiceInterface;
@@ -111,10 +111,10 @@ class ChatController extends GetxController implements GetxService {
     update();
   }
 
-  Future<void> searchConversation(String name) async {
+  Future<void> searchConversation(String name, {String? type}) async {
     _searchConversationModel = ConversationsModel();
     update();
-    ConversationsModel? searchConversationModel = await chatServiceInterface.searchConversationList(name);
+    ConversationsModel? searchConversationModel = await chatServiceInterface.searchConversationList(name, (type ?? ''));
     if(searchConversationModel != null) {
       _searchConversationModel = searchConversationModel;
     }
@@ -192,7 +192,7 @@ class ChatController extends GetxController implements GetxService {
     } else {
       List<XFile> imageFiles = await ImagePicker().pickMultiImage(imageQuality: 40);
       for(XFile xFile in imageFiles) {
-        if(_chatImage!.length >= AppConstants.maxImageSend) {
+        if(_chatImage!.length >= Dimensions.maxImageSend) {
           showCustomSnackBar('can_not_add_more_than_3_image'.tr);
           break;
         }else {
@@ -229,11 +229,11 @@ class ChatController extends GetxController implements GetxService {
       _pickedVideoFile = null;
 
       platformFile?.forEach((element) async {
-        if(_getFileSizeFromPlatformFileToDouble(element) > AppConstants.maxSizeOfASingleFile) {
+        if(_getFileSizeFromPlatformFileToDouble(element) > Dimensions.maxSizeOfASingleFile) {
           _singleFIleCrossMaxLimit = true;
         } else {
-          if(objFile.length < AppConstants.maxLimitOfTotalFileSent){
-            if((await _getMultipleFileSizeFromPlatformFiles(objFile) + _getFileSizeFromPlatformFileToDouble(element)) < AppConstants.maxLimitOfFileSentINConversation){
+          if(objFile.length < Dimensions.maxLimitOfTotalFileSent){
+            if((await _getMultipleFileSizeFromPlatformFiles(objFile) + _getFileSizeFromPlatformFileToDouble(element)) < Dimensions.maxLimitOfFileSentINConversation){
               objFile.add(element.xFile);
             }
             // objFile.add(element.xFile);
@@ -258,9 +258,9 @@ class ChatController extends GetxController implements GetxService {
       _pickedVideoFile = await ImagePicker().pickVideo(source: ImageSource.gallery);
       if(_pickedVideoFile != null){
         double videoSize = await ImageSize.getImageSizeFromXFile(_pickedVideoFile!);
-        if(videoSize > AppConstants.limitOfPickedVideoSizeInMB){
+        if(videoSize > Dimensions.limitOfPickedVideoSizeInMB){
           _pickedVideoFile = null;
-          showCustomSnackBar('${"video_size_greater_than".tr} ${AppConstants.limitOfPickedVideoSizeInMB}mb');
+          showCustomSnackBar('${"video_size_greater_than".tr} ${Dimensions.limitOfPickedVideoSizeInMB}mb');
           update();
         }else{
           _chatImage = [];

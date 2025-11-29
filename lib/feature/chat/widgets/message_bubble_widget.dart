@@ -124,7 +124,7 @@ class MessageBubbleWidget extends StatelessWidget {
                     child: Icon(
                       currentMessage.isSeen == 1 ? Icons.done_all : Icons.check,
                       size: 12,
-                      color: currentMessage.isSeen == 1 ? Theme.of(context).primaryColor : Theme.of(context).disabledColor,
+                      color: currentMessage.isSeen == 1 ? Theme.of(context).primaryColor : Theme.of(context).hintColor,
                     ),
                   ) : const SizedBox(),
                 ]),
@@ -170,7 +170,7 @@ class MessageBubbleWidget extends StatelessWidget {
                       child: Icon(
                         currentMessage.isSeen == 1 ? Icons.done_all : Icons.check,
                         size: 12,
-                        color: currentMessage.isSeen == 1 ? Theme.of(context).primaryColor : Theme.of(context).disabledColor,
+                        color: currentMessage.isSeen == 1 ? Theme.of(context).primaryColor : Theme.of(context).hintColor,
                       ),
                     ) : const SizedBox(),
                   ]),

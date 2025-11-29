@@ -16,8 +16,8 @@ class ChatService implements ChatServiceInterface {
   }
 
   @override
-  Future<ConversationsModel?> searchConversationList(String name) async {
-    return await chatRepositoryInterface.searchConversationList(name);
+  Future<ConversationsModel?> searchConversationList(String name, String type) async {
+    return await chatRepositoryInterface.searchConversationList(name, type);
   }
 
   @override

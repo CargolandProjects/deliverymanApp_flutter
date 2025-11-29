@@ -28,7 +28,7 @@ class PdfViewWidget extends StatelessWidget {
       return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-          border: Border.all(color: Theme.of(context).disabledColor, width: 0.3),
+          border: Border.all(color: Theme.of(context).hintColor, width: 0.3),
           color: Theme.of(context).cardColor,
         ),
         padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeExtraSmall, vertical: Dimensions.paddingSizeSmall),

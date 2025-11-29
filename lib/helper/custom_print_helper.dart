@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-void customPrint(var text){
+void customPrint(Object? text){
   if (kDebugMode) {
     print(text);
   }

@@ -69,7 +69,7 @@ class HistoryOrderWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeDefault, vertical: Dimensions.paddingSizeSmall),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.start, children: [
-                Image.asset(Images.house, width: 20, height: 20),
+                Image.asset(Images.house, width: 20, height: 20, color: Theme.of(context).disabledColor),
                 const SizedBox(width: Dimensions.paddingSizeExtraSmall),
                 Text(
                   orderModel.restaurantName ?? 'no_restaurant_data_found'.tr,

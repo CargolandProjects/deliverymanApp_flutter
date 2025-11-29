@@ -116,7 +116,7 @@ class CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-            borderSide: BorderSide(style: widget.showBorder ? BorderStyle.solid : BorderStyle.none, width: 1, color: Theme.of(context).disabledColor.withValues(alpha: 0.2)),
+            borderSide: BorderSide(style: widget.showBorder ? BorderStyle.solid : BorderStyle.none, width: 1, color: Theme.of(context).disabledColor),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
@@ -124,7 +124,11 @@ class CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-            borderSide: BorderSide(style: widget.showBorder ? BorderStyle.solid : BorderStyle.none, width: 1, color: Theme.of(context).disabledColor.withValues(alpha: 0.2)),
+            borderSide: BorderSide(style: widget.showBorder ? BorderStyle.solid : BorderStyle.none, width: 1, color: Theme.of(context).disabledColor),
+          ),
+          disabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+            borderSide: BorderSide(style: widget.showBorder ? BorderStyle.solid : BorderStyle.none, color: Theme.of(context).disabledColor),
           ),
           isDense: true,
           hintText: widget.hintText.isEmpty ? widget.titleText : widget.hintText,
@@ -139,8 +143,8 @@ class CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
             )),
             if(widget.isRequired && widget.labelText != null)
               TextSpan(text : ' *', style: robotoRegular.copyWith(color: Theme.of(context).colorScheme.error, fontSize: Dimensions.fontSizeDefault)),
-            // if(widget.isEnabled == false)
-            //   TextSpan(text: widget.hideEnableText ? '' : widget.fromUpdateProfile ? ' (${'phone_number_can_not_be_edited'.tr})' : ' (${'non_changeable'.tr})', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).colorScheme.error)),
+            if(widget.isEnabled == false)
+            TextSpan(text: ' (${'non_changeable'.tr})', style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeDefault, color: Theme.of(context).colorScheme.error)),
           ])) : null,
           prefixIcon:  widget.isPhone ? SizedBox(width: 95, child: Row(children: [
             Container(
@@ -178,7 +182,7 @@ class CustomTextFieldWidgetState extends State<CustomTextFieldWidget> {
             child: Image.asset(widget.prefixImage!, height: 20, width: 20),
           )  : widget.prefixImage == null && widget.prefixIcon != null ? Icon(widget.prefixIcon, size: widget.iconSize, color: widget.focusNode?.hasFocus == true ? Theme.of(context).textTheme.bodyLarge?.color : Theme.of(context).hintColor.withValues(alpha: 0.7)) : null,
           suffixIcon: widget.isPassword ? IconButton(
-            icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility, color: Theme.of(context).hintColor.withValues(alpha: 0.3)),
+            icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility, color: Theme.of(context).hintColor),
             onPressed: _toggle,
           ) : null,
         ),

@@ -43,17 +43,7 @@ class OrderRepository implements OrderRepositoryInterface {
     PaginatedOrderModel? paginatedOrderModel;
     Response response = await apiClient.getData('${AppConstants.currentOrdersUri}?token=${_getUserToken()}&status=$status');
     if (response.statusCode == 200) {
-      if (response.body is Map<String, dynamic>) {
-        paginatedOrderModel = PaginatedOrderModel.fromJson(response.body);
-      } else if (response.body is List) {
-        // Handle empty list or create PaginatedOrderModel manually if needed
-        paginatedOrderModel = PaginatedOrderModel(
-          orders: [],
-          totalSize: 0,
-          limit: '0',
-          offset: '0',
-        );
-      }
+      paginatedOrderModel = PaginatedOrderModel.fromJson(response.body);
     }
     return paginatedOrderModel;
   }

@@ -1,14 +1,10 @@
 import 'package:permission_handler/permission_handler.dart';
-import 'package:stackfood_multivendor_driver/common/widgets/custom_alert_dialog_widget.dart';
-import 'package:stackfood_multivendor_driver/common/widgets/custom_bottom_sheet_widget.dart';
 import 'package:stackfood_multivendor_driver/common/widgets/custom_card.dart';
-import 'package:stackfood_multivendor_driver/common/widgets/custom_confirmation_bottom_sheet.dart';
 import 'package:stackfood_multivendor_driver/feature/home/widgets/order_count_card_widget.dart';
 import 'package:stackfood_multivendor_driver/feature/notification/controllers/notification_controller.dart';
 import 'package:stackfood_multivendor_driver/feature/order/controllers/order_controller.dart';
 import 'package:stackfood_multivendor_driver/feature/home/widgets/count_card_widget.dart';
 import 'package:stackfood_multivendor_driver/feature/home/widgets/earning_widget.dart';
-import 'package:stackfood_multivendor_driver/feature/home/widgets/shift_dialogue_widget.dart';
 import 'package:stackfood_multivendor_driver/feature/order/screens/running_order_screen.dart';
 import 'package:stackfood_multivendor_driver/feature/profile/controllers/profile_controller.dart';
 import 'package:stackfood_multivendor_driver/helper/price_converter_helper.dart';
@@ -18,13 +14,10 @@ import 'package:stackfood_multivendor_driver/util/dimensions.dart';
 import 'package:stackfood_multivendor_driver/util/images.dart';
 import 'package:stackfood_multivendor_driver/util/styles.dart';
 import 'package:stackfood_multivendor_driver/common/widgets/custom_button_widget.dart';
-import 'package:stackfood_multivendor_driver/common/widgets/custom_snackbar_widget.dart';
 import 'package:stackfood_multivendor_driver/common/widgets/order_shimmer_widget.dart';
 import 'package:stackfood_multivendor_driver/common/widgets/order_widget.dart';
 import 'package:stackfood_multivendor_driver/common/widgets/title_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_switch/flutter_switch.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 
@@ -45,6 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
 
+    _checkSystemNotification();
+
     _listener = AppLifecycleListener(
       onStateChange: _onStateChanged,
     );
@@ -54,6 +49,12 @@ class _HomeScreenState extends State<HomeScreen> {
     Future.delayed(const Duration(milliseconds: 200), () {
       checkPermission();
     });
+  }
+
+  Future<void> _checkSystemNotification() async {
+    if(await Permission.notification.status.isDenied || await Permission.notification.status.isPermanentlyDenied) {
+      Get.find<ProfileController>().setNotificationActive(false);
+    }
   }
 
   // Listen to the app lifecycle state changes
@@ -78,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Get.find<OrderController>().removeFromIgnoreList();
     Get.find<ProfileController>().getShiftList();
     await Get.find<ProfileController>().getProfile();
-    await Get.find<OrderController>().getCurrentOrders(status: Get.find<OrderController>().selectedRunningOrderStatus!, isDataClear: false);
+    await Get.find<OrderController>().getCurrentOrders(status: 'all', isDataClear: false);
     await Get.find<OrderController>().getCompletedOrders(offset: 1, status: 'all', isUpdate: false);
     await Get.find<NotificationController>().getNotificationList();
   }
@@ -92,6 +93,9 @@ class _HomeScreenState extends State<HomeScreen> {
         _isNotificationPermissionGranted = false;
         _isBatteryOptimizationGranted = true;
       });
+
+      Get.find<ProfileController>().setNotificationActive(false);
+
     } else if(batteryStatus.isDenied) {
       setState(() {
         _isBatteryOptimizationGranted = false;
@@ -181,53 +185,6 @@ class _HomeScreenState extends State<HomeScreen> {
             }),
             onPressed: () => Get.toNamed(RouteHelper.getNotificationRoute()),
           ),
-
-          GetBuilder<ProfileController>(builder: (profileController) {
-            return GetBuilder<OrderController>(builder: (orderController) {
-              return (profileController.profileModel != null && orderController.currentOrderList != null) ? FlutterSwitch(
-                width: 75, height: 30, valueFontSize: Dimensions.fontSizeExtraSmall, showOnOff: true,
-                activeText: 'online'.tr, inactiveText: 'offline'.tr, activeColor: Theme.of(context).primaryColor,
-                value: profileController.profileModel!.active == 1, onToggle: (bool isActive) async {
-                  if(!isActive && orderController.currentOrderList!.isNotEmpty) {
-                    showCustomSnackBar('you_can_not_go_offline_now'.tr);
-                  }else {
-                    if(!isActive) {
-                      showCustomBottomSheet(
-                        child: CustomConfirmationBottomSheet(
-                          title: 'offline'.tr,
-                          description: 'are_you_sure_to_offline'.tr,
-                          onConfirm: () {
-                            profileController.updateActiveStatus(isUpdate: true);
-                          },
-                        ),
-                      );
-                    }else {
-                      LocationPermission permission = await Geolocator.checkPermission();
-                      if(permission == LocationPermission.denied || permission == LocationPermission.deniedForever
-                          || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
-
-                        _checkPermission(() {
-                          if(profileController.shifts != null && profileController.shifts!.isNotEmpty) {
-                            Get.dialog(const ShiftDialogueWidget());
-                          }else{
-                            profileController.updateActiveStatus();
-                          }
-                        });
-                      }else {
-                        if(profileController.shifts != null && profileController.shifts!.isNotEmpty) {
-                          Get.dialog(const ShiftDialogueWidget());
-                        }else{
-                          profileController.updateActiveStatus();
-                        }
-                      }
-                    }
-                  }
-                },
-              ) : const SizedBox();
-            });
-          }),
-          const SizedBox(width: Dimensions.paddingSizeSmall),
-
         ],
       ),
 
@@ -254,6 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             Expanded(
               child: SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
                 child: GetBuilder<ProfileController>(builder: (profileController) {
 
@@ -296,8 +254,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                           Row(mainAxisAlignment: MainAxisAlignment.start, children: [
 
-                            const SizedBox(width: Dimensions.paddingSizeSmall),
-
                             Image.asset(Images.wallet, width: 60, height: 60),
                             const SizedBox(width: Dimensions.paddingSizeLarge),
 
@@ -325,13 +281,19 @@ class _HomeScreenState extends State<HomeScreen> {
                               title: 'today'.tr,
                               amount: profileController.profileModel?.todaysEarning,
                             ),
-                            Container(height: 30, width: 1, color: Theme.of(context).cardColor),
+                            Container(
+                              margin: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge),
+                              height: 30, width: 1, color: Theme.of(context).cardColor,
+                            ),
 
                             EarningWidget(
                               title: 'this_week'.tr,
                               amount: profileController.profileModel?.thisWeekEarning,
                             ),
-                            Container(height: 30, width: 1, color: Theme.of(context).cardColor),
+                            Container(
+                              margin: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge),
+                              height: 30, width: 1, color: Theme.of(context).cardColor,
+                            ),
 
                             EarningWidget(
                               title: 'this_month'.tr,
@@ -351,19 +313,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     (profileController.profileModel != null && profileController.profileModel!.earnings == 1) ? Row(children: [
 
                       OrderCountCardWidget(
-                        title: 'todays_orders'.tr,
+                        title: 'today'.tr,
                         value: profileController.profileModel?.todaysOrderCount.toString(),
                       ),
                       const SizedBox(width: Dimensions.paddingSizeDefault),
 
                       OrderCountCardWidget(
-                        title: 'this_week_orders'.tr,
+                        title: 'this_week'.tr,
                         value: profileController.profileModel?.thisWeekOrderCount.toString(),
                       ),
                       const SizedBox(width: Dimensions.paddingSizeDefault),
 
                       OrderCountCardWidget(
-                        title: 'total_orders'.tr,
+                        title: 'total'.tr,
                         value: profileController.profileModel?.orderCount.toString(),
                       ),
 
@@ -406,6 +368,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               text: TextSpan(
                                 children: [
                                   TextSpan(text: 'cash_in_your_hand'.tr, style: robotoRegular.copyWith(color: Theme.of(context).hintColor)),
+
+                                  if((profileController.profileModel!.dmMaxCashInHand != null) && (profileController.profileModel!.dmMaxCashInHand! > 0) && (profileController.profileModel!.cashInHands! > profileController.profileModel!.dmMaxCashInHand!))
                                   TextSpan(text: ' (${'limit_exceeded'.tr})', style: robotoRegular.copyWith(color: ColorResources.red, fontSize: Dimensions.fontSizeSmall - 2)),
                                 ],
                               ),
@@ -419,7 +383,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontSize: Dimensions.fontSizeDefault,
                           buttonText: 'pay_now'.tr,
                           backgroundColor: Theme.of(context).primaryColor,
-                          onPressed: () => Get.toNamed(RouteHelper.getCashInHandRoute()),
+                          onPressed: () => Get.toNamed(RouteHelper.getMyAccountRoute()),
                         ),
 
                       ]),
@@ -446,7 +410,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget permissionWarning({required bool isBatteryPermission, required Function() onTap, required Function() closeOnTap}) {
-    return Container(
+    return GetPlatform.isAndroid ? Container(
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.black.withValues(alpha: 0.8),
@@ -493,10 +457,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-    );
+    ) : const SizedBox();
   }
 
-  void _checkPermission(Function callback) async {
+ /* void _checkPermission(Function callback) async {
     LocationPermission permission = await Geolocator.requestPermission();
     permission = await Geolocator.checkPermission();
 
@@ -504,15 +468,17 @@ class _HomeScreenState extends State<HomeScreen> {
       Get.back();
     }
 
-    if(permission == LocationPermission.denied/* || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)*/) {
-      Get.dialog(CustomAlertDialogWidget(description: 'you_denied'.tr, onOkPressed: () async {
+    if(permission == LocationPermission.denied*//* || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)*//*) {
+      Get.dialog(PermissionDialogWidget(description: 'you_denied'.tr, onOkPressed: () async {
         Get.back();
         final perm = await Geolocator.requestPermission();
         if(perm == LocationPermission.deniedForever) await Geolocator.openAppSettings();
-        if(GetPlatform.isAndroid) _checkPermission(callback);
+        Future.delayed(Duration(seconds: 3), () {
+          if(GetPlatform.isAndroid) _checkPermission(callback);
+        });
       }));
     }else if(permission == LocationPermission.deniedForever || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
-      Get.dialog(CustomAlertDialogWidget(description:  permission == LocationPermission.whileInUse ? 'you_denied'.tr : 'you_denied_forever'.tr, onOkPressed: () async {
+      Get.dialog(PermissionDialogWidget(description:  permission == LocationPermission.whileInUse ? 'you_denied'.tr : 'you_denied_forever'.tr, onOkPressed: () async {
         Get.back();
         await Geolocator.openAppSettings();
         Future.delayed(Duration(seconds: 3), () {
@@ -522,5 +488,5 @@ class _HomeScreenState extends State<HomeScreen> {
     }else {
       callback();
     }
-  }
+  }*/
 }

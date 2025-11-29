@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.cargolandfood.CargolandFoodRider"
+    package="com.cargolandfood.cargoland_rider"
     xmlns:tools="http://schemas.android.com/tools">
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
@@ -37,7 +37,7 @@
 
     <application
         tools:replace="android:label"
-        android:label="CargolandFood Rider"
+        android:label="Cargoland Rider"
         android:name="${applicationName}"
         android:extractNativeLibs="true"
         android:requestLegacyExternalStorage="true"
@@ -73,7 +73,7 @@
               />
             <meta-data
                 android:name="com.google.firebase.messaging.default_notification_channel_id"
-                android:value="stackfood" />
+                android:value="cargolandfood" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -86,7 +86,7 @@
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <service
-            android:name="com.cargolandfood.CargolandFoodRider.BackgroundService"
+            android:name="com.cargolandfood.cargoland_rider.BackgroundService"
             android:enabled="true"
             android:exported="false" />
 

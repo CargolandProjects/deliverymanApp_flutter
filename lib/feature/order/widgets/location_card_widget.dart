@@ -1,5 +1,6 @@
 import 'package:stackfood_multivendor_driver/common/widgets/custom_bottom_sheet_widget.dart';
 import 'package:stackfood_multivendor_driver/common/widgets/custom_confirmation_bottom_sheet.dart';
+import 'package:stackfood_multivendor_driver/common/widgets/custom_image_widget.dart';
 import 'package:stackfood_multivendor_driver/feature/auth/controllers/address_controller.dart';
 import 'package:stackfood_multivendor_driver/feature/order/controllers/order_controller.dart';
 import 'package:stackfood_multivendor_driver/feature/order/screens/order_details_screen.dart';
@@ -56,8 +57,8 @@ class _LocationCardWidgetState extends State<LocationCardWidget> {
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(Dimensions.radiusLarge),
-            topRight: Radius.circular(Dimensions.radiusLarge),
+            topLeft: Radius.circular(Dimensions.radiusExtraLarge),
+            topRight: Radius.circular(Dimensions.radiusExtraLarge),
           ),
           boxShadow: [BoxShadow(color: Get.isDarkMode ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05), blurRadius: 20, spreadRadius: 0, offset: Offset(0, 5))],
         ),
@@ -123,17 +124,22 @@ class _LocationCardWidgetState extends State<LocationCardWidget> {
               height: 88,
               child: Row(children: [
                 Column(children: [
+
                   Container(
-                    padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall + 2),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).hintColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                      border: Border.all(color: Theme.of(context).hintColor.withValues(alpha: 0.2), width: 1.5),
+                      shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.my_location, color: Theme.of(context).hintColor, size: 16),
+                    child: ClipOval(
+                      child: CustomImageWidget(
+                        image: Get.find<ProfileController>().profileModel?.imageFullUrl ?? '',
+                        height: 30, width: 30, fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
 
                   Column(
-                    children: List.generate(4, (index){
+                    children: List.generate(3, (index){
                       return Container(
                         margin: EdgeInsets.only(top: index == 0 ? 0 : 5),
                         color: Theme.of(context).hintColor.withValues(alpha: 0.5),
@@ -144,14 +150,15 @@ class _LocationCardWidgetState extends State<LocationCardWidget> {
                   ),
 
                   Container(
-                    padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall + 2),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).hintColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                      border: Border.all(color: Theme.of(context).hintColor.withValues(alpha: 0.2), width: 1.5),
+                      shape: BoxShape.circle,
                     ),
-                    child: Transform.rotate(
-                      angle: -0.9,
-                      child: Icon(Icons.send_rounded, color: Theme.of(context).hintColor, size: 16),
+                    child: ClipOval(
+                      child: CustomImageWidget(
+                        image: widget.orderModel.restaurantLogoFullUrl ?? '',
+                        height: 30, width: 30, fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ]),
@@ -183,7 +190,7 @@ class _LocationCardWidgetState extends State<LocationCardWidget> {
                         ),
                       ]),
                     ]),
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 25),
 
                     Row(children: [
                       Expanded(
@@ -226,7 +233,7 @@ class _LocationCardWidgetState extends State<LocationCardWidget> {
                       showCustomBottomSheet(
                         child: CustomConfirmationBottomSheet(
                           title: 'ignore_this_order'.tr,
-                          description: 'are_you_sure_want_to_ignore_this_order'.tr,
+                          description: 'ignore_order_description'.tr,
                           confirmButtonText: 'ignore'.tr,
                           onConfirm: (){
                             widget.orderController.ignoreOrder(widget.index);

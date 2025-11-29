@@ -1,5 +1,6 @@
 import 'package:stackfood_multivendor_driver/common/widgets/custom_asset_image_widget.dart';
 import 'package:stackfood_multivendor_driver/common/widgets/custom_bottom_sheet_widget.dart';
+import 'package:stackfood_multivendor_driver/common/widgets/custom_card.dart';
 import 'package:stackfood_multivendor_driver/common/widgets/custom_confirmation_bottom_sheet.dart';
 import 'package:stackfood_multivendor_driver/common/widgets/custom_image_widget.dart';
 import 'package:stackfood_multivendor_driver/feature/auth/controllers/address_controller.dart';
@@ -35,60 +36,80 @@ class OrderRequestWidget extends StatelessWidget {
       LatLng(double.parse(orderModel.restaurantLat!), double.parse(orderModel.restaurantLng!)),
     );
 
-    return Container(
+    return CustomCard(
       margin: const EdgeInsets.only(bottom: Dimensions.paddingSizeDefault),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-        border: Border.all(color: Theme.of(context).hintColor.withValues(alpha: 0.2), width: 1.5),
-      ),
       child: GetBuilder<OrderController>(builder: (orderController) {
         return Column(children: [
 
           Padding(
+            padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+
+              Text(
+                '${'payment'.tr} - ${orderModel.paymentMethod == 'cash_on_delivery' ? 'cod'.tr : 'digitally_paid'.tr}',
+                style: robotoBold.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.7)),
+              ),
+
+              (Get.find<SplashController>().configModel!.showDmEarning! && Get.find<ProfileController>().profileModel!.earnings == 1) ? Container(
+                padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeLarge, vertical: Dimensions.paddingSizeExtraSmall + 2),
+                decoration: BoxDecoration(
+                  color: Get.isDarkMode ? Theme.of(context).hintColor : Theme.of(context).hintColor.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                ),
+                child: Text(
+                  PriceConverter.convertPrice(orderModel.originalDeliveryCharge! + orderModel.dmTips!),
+                  style: robotoMedium,
+                ),
+              ) : const SizedBox(),
+
+            ]),
+          ),
+
+          Divider(height: 0, thickness: 1, color: Theme.of(context).hintColor.withValues(alpha: 0.2)),
+
+          Padding(
             padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
-            child: Column(children: [
+            child: Stack(children: [
+              Column(children: [
 
-              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).hintColor.withValues(alpha: 0.2), width: 1.5),
-                    shape: BoxShape.circle,
-                  ),
-                  child: ClipOval(
-                    child: CustomImageWidget(
-                      image: orderModel.restaurantLogoFullUrl ?? '',
-                      height: 45, width: 45, fit: BoxFit.cover,
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Theme.of(context).hintColor.withValues(alpha: 0.2), width: 1.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: ClipOval(
+                      child: CustomImageWidget(
+                        image: orderModel.restaurantLogoFullUrl ?? '',
+                        height: 35, width: 35, fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: Dimensions.paddingSizeSmall),
+                  const SizedBox(width: Dimensions.paddingSizeSmall),
 
-                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
-                  Text(
-                    orderModel.restaurantName ?? 'no_restaurant_data_found'.tr, maxLines: 2, overflow: TextOverflow.ellipsis,
-                    style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
-                  ),
-                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                    Text(
+                      orderModel.restaurantName ?? 'no_restaurant_data_found'.tr, maxLines: 2, overflow: TextOverflow.ellipsis,
+                      style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
+                    ),
+                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
-                  Text(
-                    '${orderModel.detailsCount} ${orderModel.detailsCount! > 1 ? 'items'.tr : 'item'.tr}',
-                    style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor),
-                  ),
-                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                    Text(
+                      '${orderModel.detailsCount} ${orderModel.detailsCount! > 1 ? 'items'.tr : 'item'.tr}',
+                      style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor),
+                    ),
+                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
-                  Text(
-                    orderModel.restaurantAddress ?? '', maxLines: 1, overflow: TextOverflow.ellipsis,
-                    style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).hintColor),
-                  ),
+                    Text(
+                      orderModel.restaurantAddress ?? '', maxLines: 1, overflow: TextOverflow.ellipsis,
+                      style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).hintColor),
+                    ),
 
-                ])),
+                  ])),
+                  SizedBox(width: Dimensions.paddingSizeDefault),
 
-                Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-
-                  Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                  Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
                     Text(
                       DateConverter.getTimeDifference(orderModel.createdAt!).split(' ')[0],
                       style: robotoMedium.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.7)),
@@ -100,98 +121,82 @@ class OrderRequestWidget extends StatelessWidget {
                       style: robotoRegular.copyWith(color: Theme.of(context).hintColor, fontSize: Dimensions.fontSizeSmall),
                     ),
                   ]),
-                  const SizedBox(height: Dimensions.paddingSizeSmall),
+                ]),
+                const SizedBox(height: Dimensions.paddingSizeSmall),
+
+
+                Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
 
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall, vertical: Dimensions.paddingSizeExtraSmall + 2),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).hintColor.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(Dimensions.radiusSmall),
+                      border: Border.all(color: Theme.of(context).hintColor.withValues(alpha: 0.2), width: 1.5),
+                      shape: BoxShape.circle,
                     ),
-                    child: Row(children: [
+                    child: ClipOval(
+                      child: CustomImageWidget(
+                        image: orderModel.customer?.imageFullUrl ?? '',
+                        height: 35, width: 35, fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: Dimensions.paddingSizeSmall),
 
-                      (Get.find<SplashController>().configModel!.showDmEarning! && Get.find<ProfileController>().profileModel!.earnings == 1) ? Text(
-                        PriceConverter.convertPrice(orderModel.originalDeliveryCharge! + orderModel.dmTips!),
-                        style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
-                      ) : const SizedBox(),
-                      const SizedBox(width: Dimensions.paddingSizeExtraSmall),
+                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+
+                    Text(
+                      'deliver_to'.tr, maxLines: 1, overflow: TextOverflow.ellipsis,
+                      style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
+                    ),
+                    const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+
+                    Text(
+                      orderModel.deliveryAddress?.address ?? '', maxLines: 1, overflow: TextOverflow.ellipsis,
+                      style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).hintColor),
+                    ),
+
+                  ])),
+                  SizedBox(width: Dimensions.paddingSizeDefault),
+
+                  InkWell(
+                    onTap: () => Get.to(()=> OrderLocationScreen(orderModel: orderModel, orderController: orderController, index: index, onTap: onTap,)),
+                    child: Row(children: [
+                      CustomAssetImageWidget(
+                        image: Images.locationIcon, height: 12, width: 15,
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(width: 3),
 
                       Text(
-                        orderModel.paymentMethod == 'cash_on_delivery' ? 'cod'.tr : 'digitally_paid'.tr,
-                        style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
+                        'view_map'.tr,
+                        style: robotoRegular.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeSmall),
                       ),
-
                     ]),
                   ),
                 ]),
+
               ]),
 
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  width: 1,
-                  margin: const EdgeInsets.only(left: Dimensions.paddingSizeLarge + 4),
-                  child: ListView.builder(
-                    itemCount: 4,
-                    shrinkWrap: true,
-                    padding: EdgeInsets.zero,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: Dimensions.paddingSizeExtraSmall),
-                        height: 5, width: 1, color: Theme.of(context).hintColor.withValues(alpha: 0.5),
-                      );
-                    },
+              Positioned(
+                top: 38, left: 0,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    width: 1,
+                    margin: const EdgeInsets.only(left: Dimensions.paddingSizeLarge - 2),
+                    child: ListView.builder(
+                      itemCount: 4,
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: Dimensions.paddingSizeExtraSmall),
+                          height: 5, width: 1, color: Theme.of(context).hintColor.withValues(alpha: 0.5),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
-
-              Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).hintColor.withValues(alpha: 0.2), width: 1.5),
-                    shape: BoxShape.circle,
-                  ),
-                  child: ClipOval(
-                    child: CustomImageWidget(
-                      image: orderModel.customer?.imageFullUrl ?? '',
-                      height: 45, width: 45, fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: Dimensions.paddingSizeSmall),
-
-                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-
-                  Text(
-                    'deliver_to'.tr, maxLines: 1, overflow: TextOverflow.ellipsis,
-                    style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
-                  ),
-                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
-
-                  Text(
-                    orderModel.deliveryAddress?.address ?? '', maxLines: 1, overflow: TextOverflow.ellipsis,
-                    style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).hintColor),
-                  ),
-
-                ])),
-
-                InkWell(
-                  onTap: () => Get.to(()=> OrderLocationScreen(orderModel: orderModel, orderController: orderController, index: index, onTap: onTap,)),
-                  child: Row(children: [
-                    CustomAssetImageWidget(
-                      image: Images.locationIcon, height: 12, width: 15,
-                      fit: BoxFit.contain,
-                    ),
-                    const SizedBox(width: 3),
-
-                    Text(
-                      'view_map'.tr,
-                      style: robotoRegular.copyWith(color: Theme.of(context).primaryColor, fontSize: Dimensions.fontSizeSmall),
-                    ),
-                  ]),
-                ),
-              ]),
-
             ]),
           ),
           const SizedBox(height: Dimensions.paddingSizeSmall),
@@ -218,7 +223,7 @@ class OrderRequestWidget extends StatelessWidget {
 
                   Text(
                    '${distance > 1000 ? '1000+' : distance.toStringAsFixed(2)} ${'km_away_from_you'.tr}', maxLines: 1, overflow: TextOverflow.ellipsis,
-                    style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall),
+                    style: robotoMedium.copyWith(color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.7)),
                   ),
 
                 ]),
@@ -228,14 +233,13 @@ class OrderRequestWidget extends StatelessWidget {
               Expanded(
                 flex: 3,
                 child: Row(children: [
-
                   Expanded(
                     child: TextButton(
                       onPressed: () {
                         showCustomBottomSheet(
                           child: CustomConfirmationBottomSheet(
                             title: 'ignore_this_order'.tr,
-                            description: 'are_you_sure_want_to_ignore_this_order'.tr,
+                            description: 'ignore_order_description'.tr,
                             confirmButtonText: 'ignore'.tr,
                             onConfirm: (){
                               orderController.ignoreOrder(index);
@@ -292,7 +296,6 @@ class OrderRequestWidget extends StatelessWidget {
                       },
                     ),
                   ),
-
                 ]),
               ),
 

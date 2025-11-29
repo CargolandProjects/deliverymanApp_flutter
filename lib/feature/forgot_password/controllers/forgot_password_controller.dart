@@ -16,6 +16,9 @@ class ForgotPasswordController extends GetxController implements GetxService{
   String _verificationCode = '';
   String get verificationCode => _verificationCode;
 
+  bool _verifyLoading = false;
+  bool get verifyLoading => _verifyLoading;
+
   Future<bool> changePassword(ProfileModel updatedUserModel, String password) async {
     _isLoading = true;
     update();
@@ -52,10 +55,10 @@ class ForgotPasswordController extends GetxController implements GetxService{
   }
 
   Future<ResponseModel> verifyToken(String? number) async {
-    _isLoading = true;
+    _verifyLoading = true;
     update();
     ResponseModel responseModel = await forgotPasswordServiceInterface.verifyToken(number, _verificationCode);
-    _isLoading = false;
+    _verifyLoading = false;
     update();
     return responseModel;
   }
@@ -68,10 +71,10 @@ class ForgotPasswordController extends GetxController implements GetxService{
   }
 
   Future<ResponseModel> verifyFirebaseOtp({required String phoneNumber, required String session, required String otp}) async {
-    _isLoading = true;
+    _verifyLoading = true;
     update();
     ResponseModel responseModel = await forgotPasswordServiceInterface.verifyFirebaseOtp(phoneNumber: phoneNumber, session: session, otp: otp);
-    _isLoading = false;
+    _verifyLoading = false;
     update();
     return responseModel;
   }

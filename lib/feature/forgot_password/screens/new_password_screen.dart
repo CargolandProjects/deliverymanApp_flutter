@@ -57,11 +57,6 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                   left: Dimensions.paddingSizeSmall, right: Dimensions.paddingSizeSmall,
                   top: Dimensions.paddingSizeDefault, bottom: 45,
                 ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  boxShadow: const [BoxShadow(color: Colors.black12, spreadRadius: 0, blurRadius: 5)],
-                  borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                ),
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
 
                   const CustomAssetImageWidget(
@@ -107,7 +102,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                   ),
 
                   authController.showPassView ? const Align(alignment: Alignment.centerLeft, child: PassViewWidget()) : const SizedBox(),
-                  const SizedBox(height: 35),
+                  const SizedBox(height: Dimensions.paddingSizeOverLarge),
 
                   CustomTextFieldWidget(
                     labelText: 'confirm_password'.tr,
@@ -129,16 +124,11 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
           GetBuilder<ForgotPasswordController>(builder: (forgotPasswordController) {
             return Container(
               padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeDefault, horizontal: Dimensions.paddingSizeExtraLarge),
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                boxShadow: const [BoxShadow(color: Colors.black12, spreadRadius: 0, blurRadius: 5)],
-              ),
               child: !forgotPasswordController.isLoading ? CustomButtonWidget(
                 buttonText: 'save'.tr,
-                backgroundColor: _newPasswordController.text.trim().isEmpty || _confirmPasswordController.text.trim().isEmpty ? Theme.of(context).disabledColor.withValues(alpha: 0.2) : Theme.of(context).primaryColor,
+                backgroundColor: _newPasswordController.text.trim().isEmpty || _confirmPasswordController.text.trim().isEmpty ? Theme.of(context).primaryColor.withValues(alpha: 0.3) : Theme.of(context).primaryColor,
                 onPressed: () => _newPasswordController.text.trim().isNotEmpty && _confirmPasswordController.text.trim().isNotEmpty ? _resetPassword(authController) : null,
               ) : const Center(child: CircularProgressIndicator()),
-
             );
           }),
 

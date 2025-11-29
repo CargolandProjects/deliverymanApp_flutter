@@ -282,19 +282,19 @@ class OrderCount {
   });
 
   OrderCount.fromJson(Map<String, dynamic> json) {
-    accepted = json['accepted'];
-    confirmed = json['confirmed'];
-    pending = json['pending'];
-    processing = json['processing'];
-    pickedUp = json['picked_up'];
-    handover = json['handover'];
-    all = json['all'];
-    delivered = json['delivered'];
-    canceled = json['canceled'];
-    refundRequested = json['refund_requested'];
-    refunded = json['refunded'];
-    refundRequestCanceled = json['refund_request_canceled'];
-    failed = json['failed'];
+    accepted = json['accepted'] != null ? int.tryParse(json['accepted'].toString()) ?? 0 : 0;
+    confirmed = json['confirmed'] != null ? int.tryParse(json['confirmed'].toString()) ?? 0 : 0;
+    pending = json['pending'] != null ? int.tryParse(json['pending'].toString()) ?? 0 : 0;
+    processing = json['processing'] != null ? int.tryParse(json['processing'].toString()) ?? 0 : 0;
+    pickedUp = json['picked_up'] != null ? int.tryParse(json['picked_up'].toString()) ?? 0 : 0;
+    handover = json['handover'] != null ? int.tryParse(json['handover'].toString()) ?? 0 : 0;
+    all = json['all'] != null ? int.tryParse(json['all'].toString()) ?? 0 : 0;
+    delivered = json['delivered'] != null ? int.tryParse(json['delivered'].toString()) ?? 0 : 0;
+    canceled = json['canceled'] != null ? int.tryParse(json['canceled'].toString()) ?? 0 : 0;
+    refundRequested = json['refund_requested'] != null ? int.tryParse(json['refund_requested'].toString()) ?? 0 : 0;
+    refunded = json['refunded'] != null ? int.tryParse(json['refunded'].toString()) ?? 0 : 0;
+    refundRequestCanceled = json['refund_request_canceled'] != null ? int.tryParse(json['refund_request_canceled'].toString()) ?? 0 : 0;
+    failed = json['failed'] != null ? int.tryParse(json['failed'].toString()) ?? 0 : 0;
   }
 
   Map<String, dynamic> toJson() {

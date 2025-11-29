@@ -13,14 +13,14 @@ class TitleWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
 
-      Text(title, style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeLarge)),
+      Text(title, style: robotoMedium),
 
       onTap != null ? InkWell(
         onTap: onTap as void Function()?,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(10, 5, 0, 5),
           child: Text(
-            'view_all'.tr,
+            'see_all'.tr,
             style: robotoMedium.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).primaryColor),
           ),
         ),

@@ -66,7 +66,7 @@ class _ImageFileViewWidgetState extends State<ImageFileViewWidget> {
                   child: Container(
                     height: double.infinity, width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Theme.of(context).disabledColor.withValues(alpha: 0.8),
+                      color: Theme.of(context).hintColor.withValues(alpha: 0.8),
                       borderRadius: BorderRadius.circular(Dimensions.radiusLarge),
                     ),
                     alignment: Alignment.center,

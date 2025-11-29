@@ -43,9 +43,9 @@ class _ConversationScreenState extends State<ConversationScreen> with TickerProv
     if(conversation != null && conversation.conversations != null && conversation.conversations!.isNotEmpty) {
       if (conversation.conversations?.first.senderType == UserType.user.name
           || conversation.conversations?.first.senderType == UserType.customer.name) {
-        type = conversation.conversations?.first.receiverType;
-      } else {
         type = conversation.conversations?.first.senderType;
+      } else {
+        type = conversation.conversations?.first.receiverType;
       }
     }
 
@@ -86,7 +86,7 @@ class _ConversationScreenState extends State<ConversationScreen> with TickerProv
               suffixIcon: chatController.searchConversationModel != null ? Icons.close : Icons.search,
               onSubmit: (String text) {
                 if(_searchController.text.trim().isNotEmpty) {
-                  chatController.searchConversation(_searchController.text.trim());
+                  chatController.searchConversation(_searchController.text.trim(), type: chatController.type);
                 }else {
                   showCustomSnackBar('write_somethings'.tr);
                 }
@@ -98,7 +98,7 @@ class _ConversationScreenState extends State<ConversationScreen> with TickerProv
                   chatController.getConversationList(1, type: 'customer');
                 }else {
                   if(_searchController.text.trim().isNotEmpty) {
-                    chatController.searchConversation(_searchController.text.trim());
+                    chatController.searchConversation(_searchController.text.trim(), type: chatController.type);
                   }else {
                     showCustomSnackBar('write_somethings'.tr);
                   }
@@ -126,7 +126,7 @@ class _ConversationScreenState extends State<ConversationScreen> with TickerProv
                       labelPadding: const EdgeInsets.only(right: Dimensions.paddingSizeDefault),
                       indicatorColor: Theme.of(context).primaryColor,
                       labelColor: Theme.of(context).textTheme.bodyLarge!.color,
-                      unselectedLabelColor: Theme.of(context).disabledColor,
+                      unselectedLabelColor: Theme.of(context).hintColor,
                       indicatorSize: TabBarIndicatorSize.label,
                       overlayColor: WidgetStateProperty.all(Colors.transparent),
                       labelStyle: robotoBold.copyWith(fontSize: Dimensions.fontSizeDefault),
@@ -146,6 +146,8 @@ class _ConversationScreenState extends State<ConversationScreen> with TickerProv
                         }
                         if(chatController.searchConversationModel == null) {
                           chatController.getConversationList(1, type: chatController.type);
+                        }else{
+                          chatController.searchConversation(_searchController.text.trim(), type: chatController.type);
                         }
                       },
                     ),
@@ -165,7 +167,7 @@ class _ConversationScreenState extends State<ConversationScreen> with TickerProv
 
                         Text(
                           '${'select_and_start_messaging'.tr}!',
-                          style: robotoRegular.copyWith(color: Theme.of(context).disabledColor),
+                          style: robotoRegular.copyWith(color: Theme.of(context).hintColor),
                         ),
                       ],
                     )),
@@ -266,6 +268,21 @@ class _ConversationScreenState extends State<ConversationScreen> with TickerProv
 
                             user != null ? Text('${user.fName} ${user.lName}', style: robotoBold) : Text('${type!.tr} ${'deleted'.tr}', style: robotoBold),
 
+                            Text(
+                              DateConverter.convertTodayYesterdayDate(conversation0.conversations![index].lastMessageTime!),
+                              style: robotoRegular.copyWith(color: Theme.of(context).hintColor, fontSize: Dimensions.fontSizeExtraSmall),
+                            ),
+
+                          ]),
+                          const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+
+                          Row(children: [
+                            user != null ? Text(
+                              lastMessage ?? hasFile ?? 'start_conversion'.tr,
+                              style: robotoBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.5), fontWeight: isUnread ? FontWeight.bold : FontWeight.normal),
+                              maxLines: 1, overflow: TextOverflow.ellipsis,
+                            ) : const SizedBox(),
+
                             isUnread ? Container(
                               padding: const EdgeInsets.all(7),
                               decoration: BoxDecoration(color: Theme.of(context).primaryColor, shape: BoxShape.circle),
@@ -274,24 +291,7 @@ class _ConversationScreenState extends State<ConversationScreen> with TickerProv
                                 style: robotoMedium.copyWith(color: Theme.of(context).cardColor, fontSize: Dimensions.fontSizeExtraSmall),
                               ),
                             ) : const SizedBox(),
-
                           ]),
-
-                          user != null ? Text(
-                            lastMessage ?? hasFile ?? 'start_conversion'.tr,
-                            style: robotoBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.5), fontWeight: isUnread ? FontWeight.bold : FontWeight.normal),
-                            maxLines: 1, overflow: TextOverflow.ellipsis,
-                          ) : const SizedBox(),
-                          const SizedBox(height: Dimensions.paddingSizeSmall),
-
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              DateConverter.localDateToIsoStringAM(DateConverter.dateTimeStringToDate(
-                                  conversation0.conversations![index].lastMessageTime!)),
-                              style: robotoRegular.copyWith(color: Theme.of(context).hintColor, fontSize: Dimensions.fontSizeExtraSmall),
-                            ),
-                          ),
 
                         ])),
                       ]),

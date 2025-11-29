@@ -17,19 +17,20 @@ class OrderButtonWidget extends StatelessWidget {
     int selectedIndex = fromMyOrder ? (orderController.selectedMyOrderStatusIndex ?? 0) : (orderController.selectedRunningOrderStatusIndex ?? 0);
     bool isSelected = selectedIndex == index;
 
-    return InkWell(
-      onTap: () {
-        if(fromMyOrder){
-          orderController.setSelectedMyOrderStatusIndex(index, statusListModel.status);
-          orderController.getCompletedOrders(offset: 1, status: statusListModel.status);
-        }else {
-          orderController.setSelectedRunningOrderStatusIndex(index, statusListModel.status);
-          orderController.getCurrentOrders(status: statusListModel.status);
-        }
-      },
-      child: Row(children: [
+    return Row(children: [
 
-        Container(
+      InkWell(
+        borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+        onTap: () {
+          if(fromMyOrder){
+            orderController.setSelectedMyOrderStatusIndex(index, statusListModel.status);
+            orderController.getCompletedOrders(offset: 1, status: statusListModel.status);
+          }else {
+            orderController.setSelectedRunningOrderStatusIndex(index, statusListModel.status);
+            orderController.getCurrentOrders(status: statusListModel.status);
+          }
+        },
+        child: Container(
           padding: const EdgeInsets.symmetric(horizontal: Dimensions.paddingSizeSmall),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
@@ -55,13 +56,7 @@ class OrderButtonWidget extends StatelessWidget {
                   color: isSelected ? Theme.of(context).cardColor.withValues(alpha: 0.4) : Theme.of(context).cardColor,
                 ),
                 child: Text(
-                  fromMyOrder
-                      ? (orderController.completedOrderCountList != null && index < orderController.completedOrderCountList!.length
-                      ? orderController.completedOrderCountList![index].toString()
-                      : '0')
-                      : (orderController.currentOrderCountList != null && index < orderController.currentOrderCountList!.length
-                      ? orderController.currentOrderCountList![index].toString()
-                      : '0'),
+                  fromMyOrder ? orderController.completedOrderCountList![index].toString() : orderController.currentOrderCountList![index].toString(),
                   maxLines: 1, overflow: TextOverflow.ellipsis,
                   style: robotoMedium.copyWith(
                     fontSize: Dimensions.fontSizeSmall,
@@ -72,10 +67,10 @@ class OrderButtonWidget extends StatelessWidget {
             ],
           ),
         ),
+      ),
 
-        const SizedBox(width: Dimensions.paddingSizeSmall),
+      const SizedBox(width: Dimensions.paddingSizeSmall),
 
-      ]),
-    );
+    ]);
   }
 }

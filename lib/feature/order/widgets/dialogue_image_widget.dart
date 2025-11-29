@@ -48,6 +48,7 @@ class DialogImageWidget extends StatelessWidget {
             GetBuilder<OrderController>(builder: (orderController) {
               return InkWell(
                 onTap: () {
+                  Get.back();
                   Get.bottomSheet(const CameraButtonSheetWidget());
                 },
                 child: Container(

@@ -63,7 +63,7 @@ class _ChatScreenState extends State<ChatScreen> {
             elevation: 2,
             backgroundColor: Theme.of(context).cardColor,
             surfaceTintColor: Theme.of(context).cardColor,
-            shadowColor: Theme.of(context).disabledColor.withValues(alpha: 0.3),
+            shadowColor: Theme.of(context).hintColor.withValues(alpha: 0.3),
             leading: IconButton(
               onPressed: () {
                 if(widget.fromNotification) {
@@ -91,7 +91,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   '${chatController.messageModel?.conversation?.receiver?.fName ?? ''} ${chatController.messageModel?.conversation?.receiver?.lName ?? ''}',
                   style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeLarge),
                 ) : Container(
-                  height: 15, width: 100, color: Theme.of(context).disabledColor.withValues(alpha: 0.2),
+                  height: 15, width: 100, color: Theme.of(context).hintColor.withValues(alpha: 0.2),
                 ),
 
                 (chatController.messageModel != null && chatController.messageModel!.conversation!.receiver!.phone != null) ? Text(
@@ -130,9 +130,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             previousMessage: index == 0 ? null : chatController.messageModel?.messages?.elementAt(index-1),
                             currentMessage: chatController.messageModel!.messages![index],
                             nextMessage: index == (chatController.messageModel!.messages!.length - 1) ? null : chatController.messageModel?.messages?.elementAt(index+1),
-                            //message: chatController.messageModel!.messages![index],
                             user: chatController.messageModel!.conversation!.sender,
-                            //sender: chatController.messageModel!.conversation!.sender,
                             userType: widget.notificationBody!.customerId != null ? UserType.user : UserType.vendor,
                           );
                         },
@@ -143,12 +141,13 @@ class _ChatScreenState extends State<ChatScreen> {
                     const CustomAssetImageWidget(image: Images.messageEmpty, height: 70, width: 70),
                     const SizedBox(height: Dimensions.paddingSizeSmall),
 
-                    Text('no_message_found'.tr, style: robotoRegular.copyWith(color: Theme.of(context).disabledColor)),
+                    Text('no_message_found'.tr, style: robotoRegular.copyWith(color: Theme.of(context).hintColor)),
                     ])) :  const ConversationDetailsShimmer()),
 
                   (chatController.messageModel != null && (chatController.messageModel!.status! || chatController.messageModel!.messages!.isEmpty)) ? Container(
-                    color: Theme.of(context).disabledColor.withValues(alpha: 0.1),
-                    child: Column(children: [
+                    padding: const EdgeInsets.only(left: Dimensions.paddingSizeDefault, top: Dimensions.paddingSizeSmall, right: Dimensions.paddingSizeDefault),
+                    color: Theme.of(context).hintColor.withValues(alpha: 0.1),
+                    child: Column(crossAxisAlignment : CrossAxisAlignment.start, children: [
 
                       chatController.pickedVideoFile != null ? Container(
                         width: 250,
@@ -198,7 +197,6 @@ class _ChatScreenState extends State<ChatScreen> {
                           separatorBuilder: (context, index) => const SizedBox(width: Dimensions.paddingSizeDefault),
                           itemCount: chatController.objFile.length,
                           itemBuilder: (context, index){
-                            // String fileSize = ImageSize.getImageSizeFromXFile(chatController.objFile![index]);
                             return Container(
                               width: 180,
                               decoration: BoxDecoration(
@@ -206,7 +204,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
                               ),
                               padding: const EdgeInsets.only(left: 10, right: 5),
-                              child: Row(crossAxisAlignment: CrossAxisAlignment.center,children: [
+                              child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
 
                                 Image.asset(Images.fileIcon,height: 30, width: 30),
                                 const SizedBox(width: Dimensions.paddingSizeExtraSmall,),
@@ -296,7 +294,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       )) : const SizedBox(),
 
                       Container(
-                        margin: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+                        margin: const EdgeInsets.only(top: Dimensions.paddingSizeDefault, bottom: Dimensions.paddingSizeDefault),
                         child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
 
                           Expanded(

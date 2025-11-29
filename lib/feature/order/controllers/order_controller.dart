@@ -94,10 +94,10 @@ class OrderController extends GetxController implements GetxService {
   String? _selectedMyOrderStatus = 'all';
   String? get selectedMyOrderStatus => _selectedMyOrderStatus;
 
-  void setSelectedRunningOrderStatusIndex(int? index, String? status) {
+  void setSelectedRunningOrderStatusIndex(int? index, String? status, {bool isUpdate = true}) {
     _selectedRunningOrderStatusIndex = index;
     _selectedRunningOrderStatus = status;
-    update();
+    if(isUpdate) update();
   }
 
   void setSelectedMyOrderStatusIndex(int? index, String? status) {
@@ -158,43 +158,36 @@ class OrderController extends GetxController implements GetxService {
   }
 
   Future<void> getCompletedOrders({required int offset, bool isUpdate = true, required String status}) async {
-    if (offset == 1) {
+    if(offset == 1) {
       _offsetList = [];
       _offset = 1;
       _completedOrderList = null;
-      if (isUpdate) {
+      if(isUpdate) {
         update();
       }
     }
-
     if (!_offsetList.contains(offset)) {
       _offsetList.add(offset);
       PaginatedOrderModel? paginatedOrderModel = await orderServiceInterface.getCompletedOrderList(offset, status: status);
-
       if (paginatedOrderModel != null) {
-        // Ensure list is not null
-        _completedOrderList ??= [];
-
-        if (paginatedOrderModel.orders != null) {
-          _completedOrderList!.addAll(paginatedOrderModel.orders!);
+        if (offset == 1) {
+          _completedOrderList = [];
         }
-
-        final count = paginatedOrderModel.orderCount;
+        _completedOrderList!.addAll(paginatedOrderModel.orders!);
         _completedOrderCountList = [
-          count?.all ?? 0,
-          count?.delivered ?? 0,
-          count?.canceled ?? 0,
-          count?.refundRequested ?? 0,
-          count?.refunded ?? 0,
-          count?.refundRequestCanceled ?? 0,
+          paginatedOrderModel.orderCount!.all ?? 0,
+          paginatedOrderModel.orderCount!.delivered ?? 0,
+          paginatedOrderModel.orderCount!.canceled ?? 0,
+          paginatedOrderModel.orderCount!.refundRequested ?? 0,
+          paginatedOrderModel.orderCount!.refunded ?? 0,
+          paginatedOrderModel.orderCount!.refundRequestCanceled ?? 0,
         ];
-
         _pageSize = paginatedOrderModel.totalSize;
         _paginate = false;
         update();
       }
     } else {
-      if (_paginate) {
+      if(_paginate) {
         _paginate = false;
         update();
       }
@@ -215,22 +208,17 @@ class OrderController extends GetxController implements GetxService {
       _currentOrderList = null;
     }
     PaginatedOrderModel? paginatedOrderModel = await orderServiceInterface.getCurrentOrders(status: status);
-    if (paginatedOrderModel != null && paginatedOrderModel.orders != null) {
+    if(paginatedOrderModel != null) {
       _currentOrderList = [];
       _currentOrderList!.addAll(paginatedOrderModel.orders!);
-
-      if (paginatedOrderModel.orderCount != null) {
-        _currentOrderCountList = [
-          paginatedOrderModel.orderCount!.all ?? 0,
-          paginatedOrderModel.orderCount!.accepted ?? 0,
-          paginatedOrderModel.orderCount!.confirmed ?? 0,
-          paginatedOrderModel.orderCount!.processing ?? 0,
-          paginatedOrderModel.orderCount!.handover ?? 0,
-          paginatedOrderModel.orderCount!.pickedUp ?? 0,
-        ];
-      } else {
-        _currentOrderCountList = [0, 0, 0, 0, 0, 0];
-      }
+      _currentOrderCountList = [
+        paginatedOrderModel.orderCount!.all ?? 0,
+        paginatedOrderModel.orderCount!.accepted ?? 0,
+        paginatedOrderModel.orderCount!.confirmed ?? 0,
+        paginatedOrderModel.orderCount!.processing ?? 0,
+        paginatedOrderModel.orderCount!.handover ?? 0,
+        paginatedOrderModel.orderCount!.pickedUp ?? 0,
+      ];
     }
     update();
   }

@@ -170,8 +170,22 @@ class DateConverter {
     final DateTime now = DateTime.now();
 
     if (createdDate.year == now.year && createdDate.month == now.month && createdDate.day == now.day) {
+
       int differenceInMinutes = now.difference(createdDate).inMinutes;
-      return '$differenceInMinutes ${'min_ago'.tr}';
+
+      if (differenceInMinutes < 60) {
+        return '$differenceInMinutes ${'min_ago'.tr}';
+      } else {
+        int hours = differenceInMinutes ~/ 60;
+        int minutes = differenceInMinutes % 60;
+
+        if (minutes == 0) {
+          return '$hours ${'hr_ago'.tr}';
+        } else {
+          return '$hours ${'hr'.tr} $minutes ${'min_ago'.tr}';
+        }
+      }
+
     } else {
       return DateFormat('h:mm a').format(createdDate);
     }

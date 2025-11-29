@@ -37,7 +37,7 @@ class UpdateScreen extends StatelessWidget {
         
               Text(
                 isUpdate ? 'your_app_is_deprecated'.tr : splashController.configModel!.maintenanceModeData?.maintenanceMessageSetup?.messageBody ?? 'maintenance_mode'.tr,
-                style: robotoRegular.copyWith(fontSize: isUpdate ? MediaQuery.of(context).size.height*0.0175 : Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
+                style: robotoRegular.copyWith(fontSize: isUpdate ? MediaQuery.of(context).size.height*0.0175 : Dimensions.fontSizeSmall, color: Theme.of(context).hintColor),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: isUpdate ? MediaQuery.of(context).size.height*0.04 : Dimensions.paddingSizeLarge),
@@ -48,7 +48,7 @@ class UpdateScreen extends StatelessWidget {
                 || splashController.configModel!.maintenanceModeData?.maintenanceMessageSetup?.businessNumber == 1 ? Column(
                   children: [
 
-                    DottedDivider(dashWidth: 10, color: Theme.of(context).disabledColor.withValues(alpha: 0.3)),
+                    DottedDivider(dashWidth: 10, color: Theme.of(context).hintColor.withValues(alpha: 0.3)),
                     const SizedBox(height: Dimensions.paddingSizeLarge),
 
                     Text(

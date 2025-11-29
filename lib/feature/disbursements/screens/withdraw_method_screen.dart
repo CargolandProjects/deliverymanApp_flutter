@@ -29,7 +29,7 @@ class _WithdrawMethodScreenState extends State<WithdrawMethodScreen> {
     initCall();
   }
 
-  initCall() async {
+  Future<void> initCall() async {
     Get.find<DisbursementController>().getWithdrawMethodList();
     disbursementHelper.enableDisbursementWarningMessage(false, canShowDialog: !widget.isFromDashboard);
   }

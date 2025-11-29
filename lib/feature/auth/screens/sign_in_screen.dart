@@ -1,4 +1,5 @@
 import 'package:country_code_picker/country_code_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:stackfood_multivendor_driver/common/widgets/custom_snackbar_widget.dart';
 import 'package:stackfood_multivendor_driver/feature/auth/controllers/auth_controller.dart';
 import 'package:stackfood_multivendor_driver/feature/language/controllers/localization_controller.dart';
@@ -14,26 +15,45 @@ import 'package:stackfood_multivendor_driver/common/widgets/custom_text_field_wi
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class SignInViewScreen extends StatelessWidget {
-  SignInViewScreen({super.key});
+class SignInViewScreen extends StatefulWidget {
+  const SignInViewScreen({super.key});
 
-  final FocusNode _phoneFocus = FocusNode();
-  final FocusNode _passwordFocus = FocusNode();
+  @override
+  State<SignInViewScreen> createState() => _SignInViewScreenState();
+}
+
+class _SignInViewScreenState extends State<SignInViewScreen> {
+
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  @override
-  Widget build(BuildContext context) {
+  final FocusNode _phoneFocus = FocusNode();
+  final FocusNode _passwordFocus = FocusNode();
 
-    String? countryDialCode = Get.find<AuthController>().getUserCountryCode().isNotEmpty ? Get.find<AuthController>().getUserCountryCode()
-        : CountryCode.fromCountryCode(Get.find<SplashController>().configModel!.country!).dialCode;
+  String? countryDialCode;
+
+  @override
+  void initState() {
+    super.initState();
+    countryDialCode = Get.find<AuthController>().getUserCountryCode().isNotEmpty ? Get.find<AuthController>().getUserCountryCode() : CountryCode.fromCountryCode(Get.find<SplashController>().configModel!.country!).dialCode;
     _phoneController.text =  Get.find<AuthController>().getUserNumber();
     _passwordController.text = Get.find<AuthController>().getUserPassword();
 
+    getNotificationPermission();
+  }
+
+  Future<void> getNotificationPermission() async {
+    var notifStatus = await Permission.notification.status;
+    if (notifStatus.isDenied || notifStatus.isPermanentlyDenied) {
+      notifStatus = await Permission.notification.request();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(child: Center(
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.all(Dimensions.paddingSizeSmall),
           child: Center(
             child: SizedBox(
@@ -76,7 +96,7 @@ class SignInViewScreen extends StatelessWidget {
 
                       CustomTextFieldWidget(
                         showBorder: false,
-                        hintText: 'password'.tr,
+                        hintText: 'eight_characters'.tr,
                         showLabelText: false,
                         controller: _passwordController,
                         focusNode: _passwordFocus,
@@ -132,7 +152,7 @@ class SignInViewScreen extends StatelessWidget {
                     },
                     child: RichText(text: TextSpan(children: [
 
-                      TextSpan(text: '${'join_as_a'.tr} ', style: robotoRegular.copyWith(color: Theme.of(context).disabledColor)),
+                      TextSpan(text: '${'join_as_a'.tr} ', style: robotoRegular.copyWith(color: Theme.of(context).hintColor)),
 
                       TextSpan(text: 'delivery_man'.tr, style: robotoMedium.copyWith(color: Theme.of(context).textTheme.bodyLarge!.color)),
 

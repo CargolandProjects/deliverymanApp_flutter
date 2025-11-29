@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:stackfood_multivendor_driver/feature/auth/controllers/auth_controller.dart';
 import 'package:stackfood_multivendor_driver/feature/dashboard/screens/dashboard_screen.dart';
@@ -24,8 +25,8 @@ class NotificationHelper {
     var androidInitialize = const AndroidInitializationSettings('notification_icon');
     var iOSInitialize = const DarwinInitializationSettings();
     var initializationsSettings = InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
-    flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>()!.requestNotificationsPermission();
+    /*flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>()!.requestNotificationsPermission();*/
     flutterLocalNotificationsPlugin.initialize(initializationsSettings, onDidReceiveNotificationResponse: (load) async{
       try{
         if(load.payload!.isNotEmpty){
@@ -87,7 +88,7 @@ class NotificationHelper {
 
         if (type != 'assign' && type != 'new_order' && type != 'order_request') {
           NotificationHelper.showNotification(message, flutterLocalNotificationsPlugin);
-          Get.find<OrderController>().getCurrentOrders(status: Get.find<OrderController>().selectedRunningOrderStatus!);
+          Get.find<OrderController>().getCurrentOrders(status: 'all');
           Get.find<OrderController>().getLatestOrders();
         }
       }
@@ -220,44 +221,27 @@ class NotificationHelper {
 
 }
 
+final AudioPlayer _audioPlayer = AudioPlayer();
+
+/// Background FCM message handler
 @pragma('vm:entry-point')
-Future<dynamic> myBackgroundMessageHandler(RemoteMessage message) async {
+Future<void> myBackgroundMessageHandler(RemoteMessage message) async {
+  WidgetsFlutterBinding.ensureInitialized();
   customPrint("onBackground: ${message.data}");
-  NotificationBodyModel? notificationBody = NotificationHelper.convertNotification(message.data);
 
-  if(notificationBody != null && (notificationBody.notificationType == NotificationType.order || notificationBody.notificationType == NotificationType.order_request)) {
+  final notificationBody = NotificationHelper.convertNotification(message.data);
+
+  if (notificationBody != null && (notificationBody.notificationType == NotificationType.order || notificationBody.notificationType == NotificationType.order_request)) {
+
     FlutterForegroundTask.initCommunicationPort();
-
-    _initService();
-
-    await _startService(notificationBody.orderId.toString(), notificationBody.notificationType!);
+    await _initService();
+    await _startService(notificationBody.orderId?.toString(), notificationBody.notificationType!);
   }
 }
 
-
-
+/// Initialize Foreground Service
 @pragma('vm:entry-point')
-Future<ServiceRequestResult> _startService(String? orderId, NotificationType notificationType) async {
-  if (await FlutterForegroundTask.isRunningService) {
-    return FlutterForegroundTask.restartService();
-
-  } else {
-
-    return FlutterForegroundTask.startService(
-      serviceId: 256,
-      notificationTitle: notificationType == NotificationType.order_request ? 'Order Notification' : 'You have been assigned a new order ($orderId)',
-      notificationText: notificationType == NotificationType.order_request ? 'New order request arrived, you can confirmed this.' : 'Open app and check order details.',
-      callback: startCallback,
-      // notificationButtons: [
-      //   const NotificationButton(id: '1', text: 'Open'),
-      // ],
-      // notificationInitialRoute: RouteHelper.getOrderDetailsRoute(int.parse(orderId!), fromNotification: true),
-    );
-  }
-}
-
-@pragma('vm:entry-point')
-void _initService() {
+Future<void> _initService() async {
   FlutterForegroundTask.init(
     androidNotificationOptions: AndroidNotificationOptions(
       channelId: 'stackfood',
@@ -279,58 +263,69 @@ void _initService() {
   );
 }
 
+/// Start Foreground Service
+@pragma('vm:entry-point')
+Future<ServiceRequestResult> _startService(String? orderId, NotificationType notificationType) async {
+  if (await FlutterForegroundTask.isRunningService) {
+    return FlutterForegroundTask.restartService();
+  } else {
+    return FlutterForegroundTask.startService(
+      serviceId: 256,
+      notificationTitle: notificationType == NotificationType.order_request ? 'Order Notification' : 'You have been assigned a new order ($orderId)',
+      notificationText: notificationType == NotificationType.order_request ? 'New order request arrived, you can confirm this.' : 'Open app and check order details.',
+      callback: startCallback,
+    );
+  }
+}
+
+/// Stop Foreground Service
 @pragma('vm:entry-point')
 Future<ServiceRequestResult> stopService() async {
-  try{
-    _audioPlayer.dispose();
-
-  }catch(e) {
-    customPrint('error-----$e');
+  try {
+    await _audioPlayer.stop();
+    await _audioPlayer.dispose();
+  } catch (e) {
+    customPrint('Audio dispose error: $e');
   }
   return FlutterForegroundTask.stopService();
 }
 
+/// Foreground Service entry point
 @pragma('vm:entry-point')
 void startCallback() {
   FlutterForegroundTask.setTaskHandler(MyTaskHandler());
 }
 
-final AudioPlayer _audioPlayer = AudioPlayer();
-
+/// Foreground Service Task Handler
 class MyTaskHandler extends TaskHandler {
+  AudioPlayer? _localPlayer;
 
   void _playAudio() {
-    _audioPlayer.play(AssetSource('notification.mp3'));
+    _localPlayer?.play(AssetSource('notification.mp3'));
   }
 
-  // Called when the task is started.
   @override
   Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
+    _localPlayer = AudioPlayer();
     _playAudio();
   }
 
-  // Called by eventAction in [ForegroundTaskOptions].
-  // - nothing() : Not use onRepeatEvent callback.
-  // - once() : Call onRepeatEvent only once.
-  // - repeat(interval) : Call onRepeatEvent at milliseconds interval.
   @override
   void onRepeatEvent(DateTime timestamp) {
     _playAudio();
   }
 
-  // Called when the task is destroyed.
   @override
-  Future<void> onDestroy(DateTime timestamp) async {
-    stopService();
+  Future<void> onDestroy(DateTime timestamp, bool isTimeout) async {
+    await _localPlayer?.dispose();
+    await stopService();
   }
 
-  // Called when data is sent using [FlutterForegroundTask.sendDataToTask].
   @override
   void onReceiveData(Object data) {
     _playAudio();
   }
 
-  // Called when the notification button is pressed.
   @override
   void onNotificationButtonPressed(String id) {
     customPrint('onNotificationButtonPressed: $id');
@@ -340,22 +335,13 @@ class MyTaskHandler extends TaskHandler {
     stopService();
   }
 
-  // Called when the notification itself is pressed.
-  //
-  // AOS: "android.permission.SYSTEM_ALERT_WINDOW" permission must be granted
-  // for this function to be called.
   @override
   void onNotificationPressed() {
     customPrint('onNotificationPressed');
-
     FlutterForegroundTask.launchApp('/');
     stopService();
   }
 
-  // Called when the notification itself is dismissed.
-  //
-  // AOS: only work Android 14+
-  // iOS: only work iOS 10+
   @override
   void onNotificationDismissed() {
     FlutterForegroundTask.updateService(

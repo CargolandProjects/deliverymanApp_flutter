@@ -30,18 +30,17 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace "com.cargolandfood.CargolandFoodRider"
+    namespace "com.cargolandfood.cargoland_rider"
     compileSdkVersion 36
 
-   compileOptions {
-    coreLibraryDesugaringEnabled true
-    sourceCompatibility JavaVersion.VERSION_17
-    targetCompatibility JavaVersion.VERSION_17
-}
-kotlinOptions {
-    jvmTarget = '17'
-}
-
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -51,23 +50,14 @@ kotlinOptions {
         disable 'InvalidPackage'
     }
 
-     packagingOptions {
-        jniLibs {
-            useLegacyPackaging false // ✅ uncompressed .so libs
-        }
-    }
-
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.cargolandfood.CargolandFoodRider"
+        applicationId "com.cargolandfood.cargoland_rider"
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
-         ndk {
-            abiFilters "arm64-v8a", "armeabi-v7a"
-        }
     }
 
     signingConfigs {
@@ -83,7 +73,10 @@ kotlinOptions {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            // signingConfig signingConfigs.debug
+             signingConfig signingConfigs.release
+        minifyEnabled false
+        shrinkResources false
         }
     }
 }
@@ -93,6 +86,6 @@ flutter {
 }
 
 dependencies {
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
     implementation "com.google.firebase:firebase-messaging:23.4.1"
 }

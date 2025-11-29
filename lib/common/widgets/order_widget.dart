@@ -64,7 +64,7 @@ class OrderWidget extends StatelessWidget {
                     style: robotoBold.copyWith(fontSize: Dimensions.fontSizeSmall, color: orderModel.paymentStatus == 'paid' ? ColorResources.green : ColorResources.red),
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 5),
 
                 Text(
                   orderModel.paymentMethod == 'cash_on_delivery' ? 'cod'.tr : 'digitally_paid'.tr,

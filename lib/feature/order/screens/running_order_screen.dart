@@ -10,58 +10,87 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stackfood_multivendor_driver/util/styles.dart';
 
-class RunningOrderScreen extends StatelessWidget {
+class RunningOrderScreen extends StatefulWidget {
   const RunningOrderScreen({super.key});
 
   @override
+  State<RunningOrderScreen> createState() => _RunningOrderScreenState();
+}
+
+class _RunningOrderScreenState extends State<RunningOrderScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    Get.find<OrderController>().setSelectedRunningOrderStatusIndex(0, 'all', isUpdate: false);
+    Get.find<OrderController>().getCurrentOrders(status: 'all');
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return GetBuilder<OrderController>(builder: (orderController) {
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          orderController.getCurrentOrders(status: 'all');
+          Future.delayed(Duration.zero, () {
+            Get.back();
+          });
+        },
+        child: Scaffold(
+          appBar: CustomAppBarWidget(
+            title: 'running_orders'.tr,
+            onBackPressed: (){
+              orderController.getCurrentOrders(status: 'all');
+              Get.back();
+            }
+          ),
 
-      appBar: CustomAppBarWidget(title: 'running_orders'.tr, isBackButtonExist: false),
+          body: GetBuilder<OrderController>(builder: (orderController) {
 
-      body: GetBuilder<OrderController>(builder: (orderController) {
+            List<StatusListModel> statusList = StatusListModel.getRunningOrderStatusList();
 
-        List<StatusListModel> statusList = StatusListModel.getRunningOrderStatusList();
+            return Padding(
+              padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
+              child: Column(children: [
 
-        return Padding(
-          padding: const EdgeInsets.all(Dimensions.paddingSizeDefault),
-          child: Column(children: [
-
-            SizedBox(
-              height: 40,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: statusList.length,
-                itemBuilder: (context, index) {
-                  return OrderButtonWidget(
-                    statusListModel: statusList[index],
-                    index: index,
-                    orderController: orderController,
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: Dimensions.paddingSizeSmall),
-
-            Expanded(
-              child: orderController.currentOrderList != null ? orderController.currentOrderList!.isNotEmpty ? RefreshIndicator(
-                onRefresh: () async {
-                  await orderController.getCurrentOrders(status: orderController.selectedRunningOrderStatus!);
-                },
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: _buildGroupedOrderWidgets(orderController),
+                SizedBox(
+                  height: 40,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: statusList.length,
+                    itemBuilder: (context, index) {
+                      return OrderButtonWidget(
+                        statusListModel: statusList[index],
+                        index: index,
+                        orderController: orderController,
+                      );
+                    },
                   ),
                 ),
-              ) : Center(child: Text('no_order_found'.tr)) : OrderListShimmer(),
-            ),
+                SizedBox(height: Dimensions.paddingSizeSmall),
 
-          ]),
-        );
-      }),
-    );
+                Expanded(
+                  child: orderController.currentOrderList != null ? orderController.currentOrderList!.isNotEmpty ? RefreshIndicator(
+                    onRefresh: () async {
+                      await orderController.getCurrentOrders(status: orderController.selectedRunningOrderStatus!);
+                    },
+                    child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: _buildGroupedOrderWidgets(orderController),
+                      ),
+                    ),
+                  ) : Center(child: Text('no_order_found'.tr)) : OrderListShimmer(),
+                ),
+
+              ]),
+            );
+          }),
+        ),
+      );
+    });
   }
 
   List<Widget> _buildGroupedOrderWidgets(OrderController controller) {
@@ -72,7 +101,7 @@ class RunningOrderScreen extends StatelessWidget {
     final Map<String, List> grouped = {};
 
     for (var order in orders) {
-      final createdDate = DateTime.tryParse(order.createdAt ?? '') ?? now;
+      final createdDate = DateTime.tryParse(order.updatedAt ?? '') ?? now;
       String label;
 
       if (_isSameDate(createdDate, now)) {
@@ -106,5 +135,4 @@ class RunningOrderScreen extends StatelessWidget {
   bool _isSameDate(DateTime a, DateTime b) {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
-
 }

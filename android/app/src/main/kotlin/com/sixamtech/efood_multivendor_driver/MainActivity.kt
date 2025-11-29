@@ -1,4 +1,4 @@
-package com.cargolandfood.CargolandFoodRider
+package com.cargolandfood.cargoland_rider
 
 import io.flutter.embedding.android.FlutterActivity
 

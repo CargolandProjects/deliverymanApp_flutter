@@ -6,9 +6,9 @@ import 'package:stackfood_multivendor_driver/feature/profile/domain/repositories
 import 'package:stackfood_multivendor_driver/feature/profile/domain/services/profile_service_interface.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:stackfood_multivendor_driver/common/widgets/custom_alert_dialog_widget.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart' as geo_coding;
+import 'package:stackfood_multivendor_driver/feature/profile/widgets/permission_dialog_widget.dart';
 
 class ProfileService implements ProfileServiceInterface {
   final ProfileRepositoryInterface profileRepositoryInterface;
@@ -68,7 +68,7 @@ class ProfileService implements ProfileServiceInterface {
   }
 
   @override
-  void checkPermission(Function callback) async {
+  Future<void> checkPermission(Function callback) async {
     LocationPermission permission = await Geolocator.requestPermission();
     permission = await Geolocator.checkPermission();
 
@@ -76,15 +76,17 @@ class ProfileService implements ProfileServiceInterface {
       Get.back();
     }
 
-    if(permission == LocationPermission.denied/* || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)*/) {
-      Get.dialog(CustomAlertDialogWidget(description: 'you_denied'.tr, onOkPressed: () async {
+    if(permission == LocationPermission.denied /*|| (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)*/) {
+      Get.dialog(PermissionDialogWidget(description: 'you_denied'.tr, onOkPressed: () async {
         Get.back();
         final perm = await Geolocator.requestPermission();
         if(perm == LocationPermission.deniedForever) await Geolocator.openAppSettings();
-        if(GetPlatform.isAndroid) checkPermission(callback);
+        Future.delayed(Duration(seconds: 3), () {
+          if(GetPlatform.isAndroid) checkPermission(callback);
+        });
       }));
     }else if(permission == LocationPermission.deniedForever || (GetPlatform.isIOS ? false : permission == LocationPermission.whileInUse)) {
-      Get.dialog(CustomAlertDialogWidget(description:  permission == LocationPermission.whileInUse ? 'you_denied'.tr : 'you_denied_forever'.tr, onOkPressed: () async {
+      Get.dialog(PermissionDialogWidget(description: permission == LocationPermission.whileInUse ? 'you_denied'.tr : 'you_denied_forever'.tr, onOkPressed: () async {
         Get.back();
         await Geolocator.openAppSettings();
         Future.delayed(Duration(seconds: 3), () {

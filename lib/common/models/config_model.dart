@@ -18,8 +18,6 @@ class ConfigModel {
   bool? orderDeliveryVerification;
   String? currencySymbolDirection;
   double? appMinimumVersionAndroid;
-  // double perKmShippingCharge;
-  // double minimumShippingCharge;
   double? freeDeliveryOver;
   bool? demo;
   bool? maintenanceMode;
@@ -44,6 +42,8 @@ class ConfigModel {
   double? minAmountToPayDm;
   MaintenanceModeData? maintenanceModeData;
   bool? firebaseOtpVerification;
+  bool? isSmsActive;
+  bool? isMailActive;
 
   ConfigModel({
     this.businessName,
@@ -65,8 +65,6 @@ class ConfigModel {
     this.orderDeliveryVerification,
     this.currencySymbolDirection,
     this.appMinimumVersionAndroid,
-    // this.perKmShippingCharge,
-    // this.minimumShippingCharge,
     this.freeDeliveryOver,
     this.demo,
     this.maintenanceMode,
@@ -91,11 +89,13 @@ class ConfigModel {
     this.minAmountToPayDm,
     this.maintenanceModeData,
     this.firebaseOtpVerification,
+    this.isSmsActive,
+    this.isMailActive,
   });
 
   ConfigModel.fromJson(Map<String, dynamic> json) {
     businessName = json['business_name'];
-    logo = json['logo'];
+    logo = json['logo_full_url'];
     address = json['address'];
     phone = json['phone'];
     email = json['email'];
@@ -113,10 +113,7 @@ class ConfigModel {
     orderDeliveryVerification = json['order_delivery_verification'];
     currencySymbolDirection = json['currency_symbol_direction'];
     appMinimumVersionAndroid = json['app_minimum_version_android_deliveryman']?.toDouble();
-    // perKmShippingCharge = json['per_km_shipping_charge']?.toDouble();
-    // minimumShippingCharge = json['minimum_shipping_charge']?.toDouble();
-    freeDeliveryOver =
-        (json['free_delivery_over'] != null && json['free_delivery_over'] != 'null') ? double.parse(json['free_delivery_over'].toString()) : null;
+    freeDeliveryOver = (json['free_delivery_over'] != null && json['free_delivery_over'] != 'null') ? double.parse(json['free_delivery_over'].toString()) : null;
     demo = json['demo'];
     maintenanceMode = json['maintenance_mode'];
     popularFood = json['popular_food'];
@@ -141,18 +138,20 @@ class ConfigModel {
       });
     }
     deliverymanAdditionalJoinUsPageData = json['deliveryman_additional_join_us_page_data'] != null
-        ? DeliverymanAdditionalJoinUsPageData.fromJson(json['deliveryman_additional_join_us_page_data'])
-        : null;
+      ? DeliverymanAdditionalJoinUsPageData.fromJson(json['deliveryman_additional_join_us_page_data'])
+      : null;
     disbursementType = json['disbursement_type'];
     minAmountToPayDm = json['min_amount_to_pay_dm']?.toDouble();
     maintenanceModeData = json['maintenance_mode_data'] != null ? MaintenanceModeData.fromJson(json['maintenance_mode_data']) : null;
     firebaseOtpVerification = json['firebase_otp_verification'] == 1;
+    isSmsActive = json['is_sms_active'];
+    isMailActive = json['is_mail_active'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['business_name'] = businessName;
-    data['logo'] = logo;
+    data['logo_full_url'] = logo;
     data['address'] = address;
     data['phone'] = phone;
     data['email'] = email;
@@ -172,8 +171,6 @@ class ConfigModel {
     data['order_delivery_verification'] = orderDeliveryVerification;
     data['currency_symbol_direction'] = currencySymbolDirection;
     data['app_minimum_version_android_deliveryman'] = appMinimumVersionAndroid;
-    // data['per_km_shipping_charge'] = this.perKmShippingCharge;
-    // data['minimum_shipping_charge'] = this.minimumShippingCharge;
     data['free_delivery_over'] = freeDeliveryOver;
     data['demo'] = demo;
     data['maintenance_mode'] = maintenanceMode;
@@ -204,6 +201,8 @@ class ConfigModel {
       data['maintenance_mode_data'] = maintenanceModeData!.toJson();
     }
     data['firebase_otp_verification'] = firebaseOtpVerification;
+    data['is_sms_active'] = isSmsActive;
+    data['is_mail_active'] = isMailActive;
     return data;
   }
 }

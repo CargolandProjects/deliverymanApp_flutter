@@ -21,10 +21,10 @@ class ProfileController extends GetxController implements GetxService {
   ProfileModel? _profileModel;
   ProfileModel? get profileModel => _profileModel;
 
-  bool _notification = true;
+  bool _notification = false;
   bool get notification => _notification;
 
-  bool _backgroundNotification = true;
+  bool _backgroundNotification = false;
   bool get backgroundNotification => _backgroundNotification;
 
   Timer? _timer;

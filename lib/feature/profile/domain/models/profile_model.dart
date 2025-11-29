@@ -38,6 +38,8 @@ class ProfileModel {
   double? withDrawableBalance;
   double? totalWithdrawn;
   bool? showPayNowButton;
+  double? dmMaxCashInHand;
+  int? totalDelivery;
 
   ProfileModel({
     this.id,
@@ -79,6 +81,8 @@ class ProfileModel {
     this.withDrawableBalance,
     this.totalWithdrawn,
     this.showPayNowButton,
+    this.dmMaxCashInHand,
+    this.totalDelivery,
   });
 
   ProfileModel.fromJson(Map<String, dynamic> json) {
@@ -126,6 +130,8 @@ class ProfileModel {
     withDrawableBalance = json['withdraw_able_balance']?.toDouble();
     totalWithdrawn = json['total_withdrawn']?.toDouble();
     showPayNowButton = json['show_pay_now_button'];
+    dmMaxCashInHand = json['dm_max_cash_in_hand']?.toDouble();
+    totalDelivery = json['total_delivery'];
   }
 
   Map<String, dynamic> toJson() {
@@ -169,6 +175,8 @@ class ProfileModel {
     data['withdraw_able_balance'] = withDrawableBalance;
     data['total_withdrawn'] = totalWithdrawn;
     data['show_pay_now_button'] = showPayNowButton;
+    data['dm_max_cash_in_hand'] = dmMaxCashInHand;
+    data['total_delivery'] = totalDelivery;
     return data;
   }
 }

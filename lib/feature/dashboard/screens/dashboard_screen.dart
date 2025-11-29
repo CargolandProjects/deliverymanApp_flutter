@@ -5,16 +5,14 @@ import 'package:stackfood_multivendor_driver/feature/home/screens/home_screen.da
 import 'package:stackfood_multivendor_driver/feature/order/controllers/order_controller.dart';
 import 'package:stackfood_multivendor_driver/feature/dashboard/widgets/bottom_nav_item_widget.dart';
 import 'package:stackfood_multivendor_driver/feature/dashboard/widgets/new_request_dialog_widget.dart';
+import 'package:stackfood_multivendor_driver/feature/order/screens/order_request_screen.dart';
 import 'package:stackfood_multivendor_driver/feature/order/screens/order_screen.dart';
-import 'package:stackfood_multivendor_driver/feature/order/screens/running_order_screen.dart';
 import 'package:stackfood_multivendor_driver/feature/profile/controllers/profile_controller.dart';
 import 'package:stackfood_multivendor_driver/feature/profile/screens/profile_screen.dart';
-import 'package:stackfood_multivendor_driver/feature/order/screens/order_request_screen.dart';
 import 'package:stackfood_multivendor_driver/helper/custom_print_helper.dart';
 import 'package:stackfood_multivendor_driver/helper/notification_helper.dart';
 import 'package:stackfood_multivendor_driver/helper/route_helper.dart';
 import 'package:stackfood_multivendor_driver/main.dart';
-import 'package:stackfood_multivendor_driver/util/dimensions.dart';
 import 'package:stackfood_multivendor_driver/common/widgets/custom_alert_dialog_widget.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +49,6 @@ class DashboardScreenState extends State<DashboardScreen> {
     _screens = [
       const HomeScreen(),
       OrderRequestScreen(onTap: () => _setPage(0)),
-      RunningOrderScreen(),
       const OrderScreen(),
       const ProfileScreen(),
     ];
@@ -68,11 +65,11 @@ class DashboardScreenState extends State<DashboardScreen> {
         NotificationHelper.showNotification(message, flutterLocalNotificationsPlugin);
       }
       if(type == 'new_order'/* || type == 'order_request'*/) {
-        Get.find<OrderController>().getCurrentOrders(status: Get.find<OrderController>().selectedRunningOrderStatus!);
+        Get.find<OrderController>().getCurrentOrders(status: 'all');
         Get.find<OrderController>().getLatestOrders();
         Get.dialog(NewRequestDialogWidget(isRequest: true, onTap: () => _navigateRequestPage(), orderId: int.parse(orderID!)));
       }else if(type == 'assign' && orderID != null && orderID.isNotEmpty) {
-        Get.find<OrderController>().getCurrentOrders(status: Get.find<OrderController>().selectedRunningOrderStatus!);
+        Get.find<OrderController>().getCurrentOrders(status: 'all');
         Get.find<OrderController>().getLatestOrders();
         Get.dialog(NewRequestDialogWidget(isRequest: false, onTap: () => Get.toNamed(RouteHelper.getOrderDetailsRoute(int.parse(orderID))), orderId: int.parse(orderID)));
       }else if(type == 'block') {
@@ -96,14 +93,6 @@ class DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
-  // Future _disableBatteryOptimization() async {
-  //   bool isDisabled = await DisableBatteryOptimization.isBatteryOptimizationDisabled ?? false;
-  //
-  //   if(!isDisabled) {
-  //     DisableBatteryOptimization.showDisableBatteryOptimizationSettings();
-  //   }
-  // }
-
   @override
   void dispose() {
     super.dispose();
@@ -111,7 +100,7 @@ class DashboardScreenState extends State<DashboardScreen> {
     _stream.cancel();
   }
 
-  showDisbursementWarningMessage() async {
+  Future<void> showDisbursementWarningMessage() async {
     disbursementHelper.enableDisbursementWarningMessage(true);
   }
 
@@ -131,27 +120,25 @@ class DashboardScreenState extends State<DashboardScreen> {
         }
       },
       child: Scaffold(
-
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            boxShadow: [BoxShadow(color: Get.isDarkMode ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05), blurRadius: 10, spreadRadius: 0, offset: Offset(0, 0))],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(Dimensions.paddingSizeExtraSmall),
+        bottomNavigationBar: SizedBox(
+          height: 70,
+          child: BottomAppBar(
+            elevation: 10,
+            notchMargin: 5,
+            surfaceTintColor: Theme.of(context).cardColor,
+            shadowColor: Theme.of(context).hintColor,
+            shape: const CircularNotchedRectangle(),
             child: Row(children: [
 
-              BottomNavItemWidget(icon: Images.homeIcon, isSelected: _pageIndex == 0, onTap: () => _setPage(0)),
+              BottomNavItemWidget(icon: Images.homeIcon, isSelected: _pageIndex == 0, title: 'home'.tr, onTap: () => _setPage(0)),
 
-              BottomNavItemWidget(icon: Images.orderRequestIcon, isSelected: _pageIndex == 1, pageIndex: 1, onTap: () {
+              BottomNavItemWidget(icon: Images.orderRequestIcon, isSelected: _pageIndex == 1, title: 'request'.tr, isOrderReq: true, onTap: () {
                 _navigateRequestPage();
               }),
 
-              BottomNavItemWidget(icon: Images.runningOrderIcon, isSelected: _pageIndex == 2, onTap: () => _setPage(2)),
+              BottomNavItemWidget(icon: Images.myOrderIcon, isSelected: _pageIndex == 2, title: 'orders'.tr, onTap: () => _setPage(2)),
 
-              BottomNavItemWidget(icon: Images.myOrderIcon, isSelected: _pageIndex == 3, onTap: () => _setPage(3)),
-
-              BottomNavItemWidget(icon: Images.personIcon, isSelected: _pageIndex == 4, onTap: () => _setPage(4)),
+              BottomNavItemWidget(icon: Images.personIcon, isSelected: _pageIndex == 3, title: 'profile'.tr, onTap: () => _setPage(3)),
 
             ]),
           ),
@@ -173,6 +160,11 @@ class DashboardScreenState extends State<DashboardScreen> {
     setState(() {
       _pageController!.jumpToPage(pageIndex);
       _pageIndex = pageIndex;
+
+      if(_pageIndex == 0 && Get.find<OrderController>().selectedRunningOrderStatusIndex != 0){
+        Get.find<OrderController>().setSelectedRunningOrderStatusIndex(0, 'all');
+        Get.find<OrderController>().getCurrentOrders(status: 'all', isDataClear: false);
+      }
     });
   }
 }

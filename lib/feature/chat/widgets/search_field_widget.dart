@@ -25,14 +25,14 @@ class _SearchFieldWidgetState extends State<SearchFieldWidget> {
       decoration: InputDecoration(
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(60),
-          borderSide: BorderSide(width: 1, color: Theme.of(context).disabledColor.withValues(alpha: 0.5)),
+          borderSide: BorderSide(width: 1, color: Theme.of(context).hintColor.withValues(alpha: 0.5)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(60),
-          borderSide: BorderSide(width: 1, color: Theme.of(context).disabledColor.withValues(alpha: 0.5)),
+          borderSide: BorderSide(width: 1, color: Theme.of(context).hintColor.withValues(alpha: 0.5)),
         ),
         hintText: widget.hint,
-        hintStyle: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).disabledColor),
+        hintStyle: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).hintColor),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(60),
           borderSide: BorderSide.none,

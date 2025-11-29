@@ -1,3 +1,4 @@
+import 'package:stackfood_multivendor_driver/common/widgets/details_custom_card.dart';
 import 'package:stackfood_multivendor_driver/feature/profile/controllers/profile_controller.dart';
 import 'package:stackfood_multivendor_driver/helper/price_converter_helper.dart';
 import 'package:stackfood_multivendor_driver/util/dimensions.dart';
@@ -36,18 +37,26 @@ class _IncentiveScreenState extends State<IncentiveScreen> {
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 
             Container(
-              height: 150, width: double.infinity,
+              height: 130, width: double.infinity,
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
+                color: Color(0xffEEF3FE), borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
               ),
-              child: Center(child: Text(
-                '${'you_have_total_incentive'.tr}\n${PriceConverter.convertPrice(profileController.profileModel!.totalIncentiveEarning)}',
-                textAlign: TextAlign.center, style: robotoBold.copyWith(fontSize: Dimensions.fontSizeOverLarge, color: Theme.of(context).cardColor),
-              )),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('you_have_total_incentive'.tr, textAlign: TextAlign.center, style: robotoRegular.copyWith(color: Colors.black)),
+                  const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+
+                  Text(
+                    PriceConverter.convertPrice(profileController.profileModel!.totalIncentiveEarning),
+                    textAlign: TextAlign.center, style: robotoBold.copyWith(fontSize: Dimensions.fontSizeOverLarge, color: Colors.black),
+                  ),
+                ],
+              ),
             ),
 
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingSizeSmall),
+              padding: const EdgeInsets.only(top: Dimensions.paddingSizeDefault),
               child: Text('current_incentive_offers'.tr, style: robotoMedium),
             ),
 
@@ -58,23 +67,18 @@ class _IncentiveScreenState extends State<IncentiveScreen> {
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 5),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(Dimensions.radiusDefault),
-                      border: Border.all(color: selectedIndex == index ? Theme.of(context).primaryColor : Theme.of(context).cardColor, width: 2),
-                      boxShadow: [BoxShadow(color: Colors.black12, spreadRadius: 1, blurRadius: 5)],
-                    ),
+                  child: DetailsCustomCard(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
                     child: Column(children: [
 
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
 
-                        Text('earning'.tr, style: robotoMedium),
+                        Text('earning'.tr, style: robotoRegular),
 
-                        Text('incentive'.tr, style: robotoMedium),
+                        Text('incentive'.tr, style: robotoRegular),
 
                       ]),
-                      const SizedBox(height: Dimensions.paddingSizeExtraSmall),
+                      const SizedBox(height: Dimensions.paddingSizeSmall),
 
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
 

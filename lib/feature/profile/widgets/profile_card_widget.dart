@@ -11,16 +11,17 @@ class ProfileCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(child: CustomCard(
-      height: 100,
+      isBorder: false,
+      padding: EdgeInsets.all(Dimensions.paddingSizeExtraLarge),
       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
 
-        Text(data, style: robotoMedium.copyWith(
+        Text(data, style: robotoBold.copyWith(
           fontSize: Dimensions.fontSizeExtraLarge, color: Theme.of(context).primaryColor,
         )),
-        const SizedBox(height: Dimensions.paddingSizeSmall),
+        const SizedBox(height: Dimensions.paddingSizeExtraSmall),
 
         Text(title, style: robotoRegular.copyWith(
-          fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).hintColor,
+          fontSize: Dimensions.fontSizeSmall, color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.6),
         )),
 
       ]),

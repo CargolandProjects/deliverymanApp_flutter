@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:stackfood_multivendor_driver/common/widgets/details_custom_card.dart';
+import 'package:stackfood_multivendor_driver/common/widgets/custom_card.dart';
 import 'package:stackfood_multivendor_driver/util/dimensions.dart';
 import 'package:stackfood_multivendor_driver/util/styles.dart';
 import 'package:flutter/material.dart';
@@ -15,14 +15,15 @@ class ProfileButtonWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap as void Function()?,
-      child: DetailsCustomCard(
+      child: CustomCard(
+        isBorder: false,
         padding: EdgeInsets.symmetric(
           horizontal: Dimensions.paddingSizeSmall,
           vertical: isButtonActive != null ? 8 : Dimensions.paddingSizeDefault,
         ),
         child: Row(children: [
 
-          Icon(icon, size: 25),
+          Icon(icon, size: 25, color: Theme.of(context).textTheme.bodyLarge?.color?.withValues(alpha: 0.6)),
           const SizedBox(width: Dimensions.paddingSizeSmall),
 
           Expanded(child: Text(title, style: robotoRegular)),

@@ -78,11 +78,15 @@ class AuthRepository implements AuthRepositoryInterface {
       await FirebaseMessaging.instance.unsubscribeFromTopic(AppConstants.topic);
       FirebaseMessaging.instance.unsubscribeFromTopic(sharedPreferences.getString(AppConstants.zoneTopic)!);
 
-      apiClient.postData(AppConstants.tokenUri, {"_method": "put", "token": getUserToken()}, handleError: false);
+      apiClient.postData(AppConstants.tokenUri, {"_method": "put", "token": getUserToken(), "fcm_token": '@'}, handleError: false);
     }
     await sharedPreferences.remove(AppConstants.token);
     await sharedPreferences.setStringList(AppConstants.ignoreList, []);
     await sharedPreferences.remove(AppConstants.userAddress);
+    await sharedPreferences.remove(AppConstants.userPassword);
+    await sharedPreferences.remove(AppConstants.userNumber);
+    await sharedPreferences.remove(AppConstants.userCountryCode);
+    await clearUserNumberAndPassword();
     apiClient.updateHeader(null, null);
     return true;
   }

@@ -2,6 +2,7 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:stackfood_multivendor_driver/util/dimensions.dart';
+import 'package:stackfood_multivendor_driver/util/styles.dart';
 
 class CodePickerWidget extends StatefulWidget {
   final ValueChanged<CountryCode>? onChanged;
@@ -172,6 +173,10 @@ class _CodePickerWidgetState extends State<CodePickerWidget> {
                 hideSearch: widget.hideSearch!,
                 closeIcon: widget.closeIcon,
                 flagDecoration: widget.flagDecoration,
+                hideHeaderText: false,
+                headerAlignment: MainAxisAlignment.start,
+                headerTextStyle: robotoMedium,
+                topBarPadding: EdgeInsets.zero,
               ),
             ),
           ),
@@ -206,6 +211,10 @@ class _CodePickerWidgetState extends State<CodePickerWidget> {
             barrierColor: widget.barrierColor,
             hideSearch: widget.hideSearch!,
             closeIcon: widget.closeIcon,
+            hideHeaderText: false,
+            headerAlignment: MainAxisAlignment.start,
+            headerTextStyle: robotoMedium,
+            topBarPadding: EdgeInsets.zero,
           ),
         ),
         useRootNavigator: true,

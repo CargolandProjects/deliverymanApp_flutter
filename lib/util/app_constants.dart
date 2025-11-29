@@ -2,8 +2,10 @@ import 'package:stackfood_multivendor_driver/feature/language/domain/models/lang
 import 'package:stackfood_multivendor_driver/util/images.dart';
 
 class AppConstants {
-  static const String appName = 'CargolandFood Rider';
-  static const double appVersion = 8.2;
+  static const String appName = 'Cargoland Rider';
+  static const double appVersion = 8.5;
+
+  ///Flutter SDK: 3.35.7
 
   static const String baseUrl = 'https://cargolandfood.com';
   static const String configUri = '/api/v1/config';
@@ -66,7 +68,7 @@ class AppConstants {
   static const String firebaseAuthVerify =
       '/api/v1/auth/delivery-man/firebase-verify-token';
 
-  //chat url
+  ///chat url
   static const String getConversationListUri =
       '/api/v1/delivery-man/message/list';
   static const String getMessageListUri =
@@ -75,7 +77,7 @@ class AppConstants {
   static const String searchConversationListUri =
       '/api/v1/delivery-man/message/search-list';
 
-  // Shared Key
+  /// Shared Key
   static const String theme = 'theme';
   static const String token = 'stackfood_multivendor_driver_token';
   static const String countryCode = 'country_code';
@@ -96,11 +98,6 @@ class AppConstants {
   static const String langIntro = 'language_intro';
   static const String maintenanceModeTopic = 'maintenance_mode_deliveryman_app';
   static const String notificationIdList = 'notification_id_list';
-  // Referrals
-  static const String referralsUri = '/api/v1/delivery-man/referrals/referrals';
-  static const String referralCodeUri =
-      '/api/v1/delivery-man/referrals/referral-code';
-  static const String referralStatsUri = '/api/v1/delivery-man/referrals/stats';
 
   static List<LanguageModel> languages = [
     LanguageModel(
@@ -124,11 +121,4 @@ class AppConstants {
         countryCode: 'BN',
         languageCode: 'bn'),
   ];
-
-  static const double maxLimitOfFileSentINConversation = 25;
-  static const double maxLimitOfTotalFileSent = 5;
-  static const double maxSizeOfASingleFile = 10;
-  static const double maxImageSend = 10;
-
-  static const double limitOfPickedVideoSizeInMB = 50;
 }

@@ -70,46 +70,26 @@ class _OrderLocationScreenState extends State<OrderLocationScreen> {
       Uint8List deliveryBoyImageData = await _convertAssetToUnit8List(Images.yourMarker, width: 100);
       Uint8List destinationImageData = await _convertAssetToUnit8List(Images.customerMarker, width: 100);
 
-      LatLngBounds? bounds;
       double deliveryLat = double.parse(orderModel.deliveryAddress?.latitude ?? '0');
       double deliveryLng = double.parse(orderModel.deliveryAddress?.longitude ?? '0');
       double restaurantLat = double.parse(orderModel.restaurantLat ?? '0');
       double restaurantLng = double.parse(orderModel.restaurantLng ?? '0');
-      double deliveryManLat = Get.find<ProfileController>().recordLocationBody?.latitude ?? 0;
-      double deliveryManLng = Get.find<ProfileController>().recordLocationBody?.longitude ?? 0;
-
-      // Determine bounds based on locations
-      bounds = LatLngBounds(
-        southwest: LatLng(
-          min(deliveryLat, min(restaurantLat, deliveryManLat)),
-          min(deliveryLng, min(restaurantLng, deliveryManLng)),
-        ),
-        northeast: LatLng(
-          max(deliveryLat, max(restaurantLat, deliveryManLat)),
-          max(deliveryLng, max(restaurantLng, deliveryManLng)),
-        ),
-      );
-
-      LatLng centerBounds = LatLng(
-        (bounds.northeast.latitude + bounds.southwest.latitude) / 2,
-        (bounds.northeast.longitude + bounds.southwest.longitude) / 2,
-      );
-
-      if (kDebugMode) {
-        print('center bound $centerBounds');
-      }
-
-      // Zoom to fit bounds
-      _controller!.moveCamera(CameraUpdate.newLatLngBounds(bounds, 50));
+      double? deliveryManLat = Get.find<ProfileController>().recordLocationBody?.latitude;
+      double? deliveryManLng = Get.find<ProfileController>().recordLocationBody?.longitude;
 
       // Clear previous markers
       _markers.clear();
 
+      // Collect valid locations for bounds calculation
+      List<LatLng> validLocations = [];
+
       // Add destination marker (delivery address)
-      if (orderModel.deliveryAddress != null) {
+      if (orderModel.deliveryAddress != null && deliveryLat != 0 && deliveryLng != 0) {
+        LatLng deliveryLocation = LatLng(deliveryLat, deliveryLng);
+        validLocations.add(deliveryLocation);
         _markers.add(Marker(
           markerId: const MarkerId('destination'),
-          position: LatLng(deliveryLat, deliveryLng),
+          position: deliveryLocation,
           infoWindow: InfoWindow(
             title: 'Destination',
             snippet: orderModel.deliveryAddress?.address,
@@ -119,10 +99,12 @@ class _OrderLocationScreenState extends State<OrderLocationScreen> {
       }
 
       // Add restaurant marker
-      if (orderModel.restaurantLat != null && orderModel.restaurantLng != null) {
+      if (orderModel.restaurantLat != null && orderModel.restaurantLng != null && restaurantLat != 0 && restaurantLng != 0) {
+        LatLng restaurantLocation = LatLng(restaurantLat, restaurantLng);
+        validLocations.add(restaurantLocation);
         _markers.add(Marker(
           markerId: const MarkerId('restaurant'),
-          position: LatLng(restaurantLat, restaurantLng),
+          position: restaurantLocation,
           infoWindow: InfoWindow(
             title: orderModel.restaurantName,
             snippet: orderModel.restaurantAddress,
@@ -132,16 +114,48 @@ class _OrderLocationScreenState extends State<OrderLocationScreen> {
       }
 
       // Add delivery boy marker
-      if (Get.find<ProfileController>().recordLocationBody != null) {
+      if (deliveryManLat != null && deliveryManLng != null && deliveryManLat != 0 && deliveryManLng != 0) {
+        LatLng deliveryManLocation = LatLng(deliveryManLat, deliveryManLng);
+        validLocations.add(deliveryManLocation);
         _markers.add(Marker(
           markerId: const MarkerId('delivery_boy'),
-          position: LatLng(deliveryManLat, deliveryManLng),
+          position: deliveryManLocation,
           infoWindow: InfoWindow(
             title: '${Get.find<ProfileController>().profileModel?.fName ?? ''} ${Get.find<ProfileController>().profileModel?.lName ?? ''}',
             snippet: Get.find<ProfileController>().recordLocationBody?.location,
           ),
           icon: BitmapDescriptor.bytes(deliveryBoyImageData, height: 40, width: 40),
         ));
+      }
+
+      // Calculate bounds only if we have valid locations
+      if (validLocations.isNotEmpty && _controller != null) {
+        if (validLocations.length == 1) {
+          // If only one location, just center on it
+          _controller!.animateCamera(
+            CameraUpdate.newLatLngZoom(validLocations.first, 16),
+          );
+        } else {
+          // Calculate bounds for multiple locations
+          double minLat = validLocations.map((l) => l.latitude).reduce(min);
+          double maxLat = validLocations.map((l) => l.latitude).reduce(max);
+          double minLng = validLocations.map((l) => l.longitude).reduce(min);
+          double maxLng = validLocations.map((l) => l.longitude).reduce(max);
+
+          LatLngBounds bounds = LatLngBounds(
+            southwest: LatLng(minLat, minLng),
+            northeast: LatLng(maxLat, maxLng),
+          );
+
+          if (kDebugMode) {
+            print('Bounds: SW(${bounds.southwest}), NE(${bounds.northeast})');
+          }
+
+          // Animate to fit all markers with padding
+          _controller!.animateCamera(
+            CameraUpdate.newLatLngBounds(bounds, 100),
+          );
+        }
       }
     } catch (e) {
       if (kDebugMode) {

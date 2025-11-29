@@ -44,16 +44,19 @@ class NotificationModel {
 
 class Data {
   String? type;
+  dynamic orderId;
 
-  Data({this.type});
+  Data({this.type, this.orderId});
 
   Data.fromJson(Map<String, dynamic> json) {
     type = json['type'];
+    orderId = json['order_id'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['type'] = type;
+    data['order_id'] = orderId;
     return data;
   }
 }

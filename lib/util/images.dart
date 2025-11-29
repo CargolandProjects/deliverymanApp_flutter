@@ -47,8 +47,14 @@ class Images {
   static const String orderRequestIcon = 'assets/image/order_request.png';
   static const String personIcon = 'assets/image/person.png';
   static const String runningOrderIcon = 'assets/image/running_order.png';
+  static const String myAccountIcon = 'assets/image/my_account.png';
   static const String locationIcon = 'assets/image/location_icon.png';
   static const String cooking = 'assets/image/cooking.png';
+  static const String otp = 'assets/image/otp.png';
+  static const String helpAddress = 'assets/image/help_address.png';
+  static const String helpPhone = 'assets/image/help_phone.png';
+  static const String helpEmail = 'assets/image/help_email.png';
+  static const String pictureIcon = 'assets/image/picture.png';
 
   ///Svg Images
   static const String changePasswordBgImage = 'assets/image/change_password_bg_image.svg';
@@ -56,4 +62,5 @@ class Images {
   static const String attachment = 'assets/image/attachment.svg';
   static const String sendIcon = 'assets/image/send.svg';
   static const String orderIcon = 'assets/image/order_on_the_way_icon.svg';
+  static const String locationVectorImage = 'assets/image/location_vector.svg';
 }

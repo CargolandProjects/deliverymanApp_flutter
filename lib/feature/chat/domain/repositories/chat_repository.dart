@@ -27,9 +27,9 @@ class ChatRepository implements ChatRepositoryInterface {
   }
 
   @override
-  Future<ConversationsModel?> searchConversationList(String name) async {
+  Future<ConversationsModel?> searchConversationList(String name, String type) async {
     ConversationsModel? searchConversationModel;
-    Response response = await apiClient.getData('${AppConstants.searchConversationListUri}?name=$name&token=${_getUserToken()}&limit=20&offset=1');
+    Response response = await apiClient.getData('${AppConstants.searchConversationListUri}?name=$name&token=${_getUserToken()}&limit=20&offset=1&type=$type');
     if(response.statusCode == 200) {
       searchConversationModel = ConversationsModel.fromJson(response.body);
     }

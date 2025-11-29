@@ -150,7 +150,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                 padding: const EdgeInsets.only(right: 40),
                                 child: Text(
                                   notificationController.notificationList![index].description ?? '',
-                                  style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: isSeen ? Theme.of(context).disabledColor : Theme.of(context).textTheme.bodyLarge?.color),
+                                  style: robotoRegular.copyWith(fontSize: Dimensions.fontSizeSmall, color: isSeen ? Theme.of(context).hintColor : Theme.of(context).textTheme.bodyLarge?.color),
                                   maxLines: 1, overflow: TextOverflow.ellipsis,
                                 ),
                               ),
